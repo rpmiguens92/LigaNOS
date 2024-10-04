@@ -1,93 +1,82 @@
 ﻿using LigaNOS.Data;
 using LigaNOS.Data.Entities;
-using LigaNOS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace LigaNOS.Controllers
 {
-
-    public class UsersController : Controller
+    public class ClubsController : Controller
     {
-
         private readonly DataContext _context;
-        
-        public UsersController(DataContext context)
+        public ClubsController(DataContext context)
         {
             _context = context;
         }
 
-
-        // GET: UsersController
-        public async Task<ActionResult> Index()
+        // GET: ClubsController
+        public async Task<IActionResult> Index()
         {
-            return View(await _context.Users.ToListAsync());
+            return View(await _context.Clubs.ToListAsync());
         }
 
-        // GET: UsersController/Details/5
-        public async Task<ActionResult> Details(int? id)
+        // GET: ClubsController/Details/5
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var user = await _context.Users
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (user == null)
+            var club = await _context.Clubs
+                .FirstOrDefaultAsync(m => m.ClubId == id);
+            if (club == null)
             {
                 return NotFound();
             }
 
-            return View(user);
+            return View(club);
         }
 
-        // GET: UsersController/Create
-        public IActionResult Create()
+        // GET: ClubsController/Create
+        public ActionResult Create()
         {
             return View();
         }
 
-        // POST: UsersController/Create
+        // POST: ClubsController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind("Id,ImageFile,Name,Document,Address,Phone,Email,Function")] User user)
+        public async Task<IActionResult> Create([Bind("ClubId,ImageFile,Name,Coach")] Club club)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(user);
+                _context.Add(club);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(user);
+            return View(club);
         }
 
-        // GET: UsersController/Edit/5
-        public async Task<IActionResult> Edit(int ?id)
+        // GET: ClubsController/Edit/5
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id == null)
+            var club = await _context.Clubs.FindAsync(id);
+            if (club == null)
             {
                 return NotFound();
             }
-
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-            return View(user);
+            return View(club);
         }
 
-        // POST: UsersController/Edit/5
+        // POST: ClubsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(int id, [Bind("Id,ImageFile,Name,Document,Address,Phone,Email,Function")] User user)
+        public async Task<IActionResult> Edit(int id, [Bind("ClubId,ImageFile,Name,Coach")] Club club)
         {
-            if (id != user.Id)
+            if (id != club.ClubId)
             {
                 return NotFound();
             }
@@ -96,12 +85,12 @@ namespace LigaNOS.Controllers
             {
                 try
                 {
-                    _context.Update(user);
+                    _context.Update(club);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UserExists(user.Id))
+                    if (!ClubExists(club.ClubId))
                     {
                         return NotFound();
                     }
@@ -112,12 +101,10 @@ namespace LigaNOS.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(user);
+            return View(club);
         }
 
-   
-
-        // GET: UsersController/Delete/5  
+        // GET: ClubsController/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -125,30 +112,31 @@ namespace LigaNOS.Controllers
                 return NotFound();
             }
 
-            var user = await _context.Users
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (user == null)
+            var club = await _context.Clubs
+                .FirstOrDefaultAsync(m => m.ClubId == id);
+            if (club == null)
             {
                 return NotFound();
             }
 
-            return View(user);
+            return View(club);
         }
 
-        // POST: UsersController/Delete/5  
+        // POST: ClubsController/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var user = await _context.Users.FindAsync(id);
-            _context.Users.Remove(user);
+            var club = await _context.Clubs.FindAsync(id);
+            _context.Clubs.Remove(club);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool UserExists(int id)
+        private bool ClubExists(int id)
         {
-            return _context.Users.Any(e => e.Id == id);
+            return _context.Clubs.Any(e => e.ClubId == id);
         }
+    
     }
 }

@@ -1,15 +1,19 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.ComponentModel.DataAnnotations;
- 
+
 
 namespace LigaNOS.Data.Entities
 {
-    public class User : IdentityUser
+    public class User : IEntity
     {
+        public int Id { get; set; }
+        
 
-        [Display(Name = "Image")]
-        public Guid ImageId { get; set; }
+        [Display(Name = "Photo")]
+        [Required]
+        public Guid ImageFile { get; set; }
+
 
         [Required]
         [MaxLength(50, ErrorMessage = "The field {0} can contain {1} characters lenght.")]
@@ -27,5 +31,10 @@ namespace LigaNOS.Data.Entities
 
         [Required]
         public string Email { get; set; }
+
+        [Required]
+        public string Function { get; set; }
+
+     
     }
 }

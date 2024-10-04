@@ -1,0 +1,52 @@
+﻿@model IEnumerable<LigaNOS.Data.Entities.Player>
+
+<h3>Players</h3>
+ 
+
+<p>
+    
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Position)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().DateOfBirth)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().ImageFile) 
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().ClubId)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@Html.DisplayFor(modelItem => item.Name)</td>
+            <td>@Html.DisplayFor(modelItem => item.Position)</td>
+            <td>@Html.DisplayFor(modelItem => item.DateOfBirth)</td>
+            <td>
+                <img src="@Url.Action("GetPlayerImage", "Players", new { id = item.ImageFile })" alt="Player Image" style="width:100px; height:auto;" />
+            </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.PlayerId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.PlayerId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.PlayerId">Delete</a>
+                </td>
+        </tr>
+    }
+    </tbody>
+</table>
+<a asp-action="Create" class="btn btn-primary">Add New Player</a>
+
+ 
+

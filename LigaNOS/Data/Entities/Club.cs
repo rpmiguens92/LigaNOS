@@ -1,0 +1,30 @@
+﻿using Microsoft.Extensions.Primitives;
+using System.Collections.Generic;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Http;
+
+namespace LigaNOS.Data.Entities
+{
+    public class Club : IEntity
+    {
+        [Key]
+        public int ClubId { get; set; }
+
+        [Display(Name = "Symbol")]
+        [Required]
+        public Guid ImageFile { get; set; }
+
+
+        [Required]
+        [StringLength(50, ErrorMessage = "The field {0} can contain {1} characters length.")]
+        public string Name { get; set; }
+
+        [Required]
+        [StringLength(50, ErrorMessage = "The field {0} can contain {1} characters length.")]
+        public string Coach { get; set; }
+      
+        public ICollection<Player> Players { get; set; }
+    }
+}

@@ -3,16 +3,16 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h3>Users</h3>
 
 <p>
-    <a asp-action="Create">Create New</a>
+
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.ImageId)
+                @Html.DisplayNameFor(model => model.ImageFile)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Name)
@@ -29,6 +29,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Email)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Function)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -37,7 +40,7 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.ImageId)
+                    @Html.DisplayFor(modelItem => item.ImageFile)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Name)
@@ -55,6 +58,9 @@
                     @Html.DisplayFor(modelItem => item.Email)
                 </td>
                 <td>
+                    @Html.DisplayFor(modelItem => item.Function)
+                </td>
+                <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                     <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
@@ -63,3 +69,4 @@
         }
     </tbody>
 </table>
+<a asp-action="Create" class="btn btn-primary">Create New User</a>

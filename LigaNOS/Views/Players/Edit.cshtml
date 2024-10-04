@@ -1,0 +1,46 @@
+﻿@model LigaNOS.Data.Entities.Player
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<div class="row">
+    <div class="col-md-4">
+
+        <form asp-action="Edit" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="PlayerId" />
+            <div class="col-md-4">
+
+                <div class="form-group">
+                    <label asp-for="ImageFile" class="control-label"></label>
+                    <input asp-for="ImageFile" class="form-control" type="file" />
+                    <span asp-validation-for="ImageFile" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="DateOfBirth" class="control-label"></label>
+                    <input asp-for="DateOfBirth" class="form-control" />
+                    <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Position" class="control-label"></label>
+                    <input asp-for="Position" class="form-control" />
+                    <span asp-validation-for="Position" class="text-danger"></span>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Save" class="btn btn-primary" />
+        <a asp-action="Index" class="btn btn-success">Back to List</a>
+    </div>
+</div>
