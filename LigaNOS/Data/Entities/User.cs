@@ -7,7 +7,6 @@ namespace LigaNOS.Data.Entities
 {
     public class User : IdentityUser
     {
-        public int Id { get; set; }
 
         [Display(Name = "Image")]
         public Guid ImageId { get; set; }
