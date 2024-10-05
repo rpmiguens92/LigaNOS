@@ -49,7 +49,7 @@ namespace LigaNOS.Controllers
         // POST: ClubsController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ClubId,ImageFile,Name,Coach")] Club club)
+        public async Task<IActionResult> Create(Club club)
         {
             if (ModelState.IsValid)
             {
@@ -74,7 +74,7 @@ namespace LigaNOS.Controllers
         // POST: ClubsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ClubId,ImageFile,Name,Coach")] Club club)
+        public async Task<IActionResult> Edit(int id, Club club)
         {
             if (id != club.ClubId)
             {

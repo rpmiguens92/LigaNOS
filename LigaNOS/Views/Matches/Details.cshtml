@@ -1,0 +1,41 @@
+﻿@model LigaNOS.Data.Entities.Match
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Customer</h4>
+    <hr />
+    <dl class="row">
+   
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.HomeClub)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.AwayClub)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.AwayClub)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.HomeGoals)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.AwayGoals)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MatchDay)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MatchTime)
+        </dd>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Stadium)
+        </dd>
+       
+        <div>
+            <a asp-action="Edit" asp-route-id="@Model.MatchId">Edit</a> |
+            <a asp-action="Index">Back to List</a>
+        </div>

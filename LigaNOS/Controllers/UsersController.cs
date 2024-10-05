@@ -55,7 +55,7 @@ namespace LigaNOS.Controllers
         // POST: UsersController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind("Id,ImageFile,Name,Document,Address,Phone,Email,Function")] User user)
+        public async Task<ActionResult> Create(User user)
         {
             if (ModelState.IsValid)
             {
@@ -85,7 +85,7 @@ namespace LigaNOS.Controllers
         // POST: UsersController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(int id, [Bind("Id,ImageFile,Name,Document,Address,Phone,Email,Function")] User user)
+        public async Task<ActionResult> Edit(int id,User user)
         {
             if (id != user.Id)
             {

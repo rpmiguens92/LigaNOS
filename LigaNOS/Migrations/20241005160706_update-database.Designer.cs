@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LigaNOS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241004161825_addUsersPlayers")]
-    partial class addUsersPlayers
+    [Migration("20241005160706_update-database")]
+    partial class updatedatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -44,6 +44,43 @@ namespace LigaNOS.Migrations
                     b.HasKey("ClubId");
 
                     b.ToTable("Clubs");
+                });
+
+            modelBuilder.Entity("LigaNOS.Data.Entities.Match", b =>
+                {
+                    b.Property<int>("MatchId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AwayClubId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AwayGoals")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HomeClubId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HomeGoals")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("MatchDay")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MatchTime")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Stadium")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("MatchId");
+
+                    b.HasIndex("AwayClubId");
+
+                    b.HasIndex("HomeClubId");
+
+                    b.ToTable("Matches");
                 });
 
             modelBuilder.Entity("LigaNOS.Data.Entities.Player", b =>
@@ -118,6 +155,25 @@ namespace LigaNOS.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("LigaNOS.Data.Entities.Match", b =>
+                {
+                    b.HasOne("LigaNOS.Data.Entities.Club", "AwayClub")
+                        .WithMany()
+                        .HasForeignKey("AwayClubId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LigaNOS.Data.Entities.Club", "HomeClub")
+                        .WithMany()
+                        .HasForeignKey("HomeClubId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AwayClub");
+
+                    b.Navigation("HomeClub");
                 });
 
             modelBuilder.Entity("LigaNOS.Data.Entities.Player", b =>

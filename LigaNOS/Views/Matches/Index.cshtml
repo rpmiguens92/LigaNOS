@@ -1,0 +1,62 @@
+﻿@model IEnumerable<LigaNOS.Data.Entities.Match>
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h3>Matches</h3>
+
+
+<p>
+
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.First().HomeClub)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().AwayClub)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().HomeGoals)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().AwayGoals)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().MatchDay)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().MatchTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Stadium)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.HomeClub)</td>
+                <td>@Html.DisplayFor(modelItem => item.AwayClub)</td>
+                <td>@Html.DisplayFor(modelItem => item.HomeGoals)</td>
+                <td>@Html.DisplayFor(modelItem => item.AwayGoals)</td>
+                <td>@Html.DisplayFor(modelItem => item.MatchDay)</td>
+                <td>@Html.DisplayFor(modelItem => item.MatchTime)</td>
+                <td>@Html.DisplayFor(modelItem => item.Stadium)</td>
+               @*  <td>
+                    <img src="@Url.Action("GetMatchesImage", "Matches", new { id = item.ImageFile })" alt="Match Image" style="width:100px; height:auto;" />
+                </td> *@
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.MatchId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.MatchId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.MatchId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<a asp-action="Create" class="btn btn-primary">Add New Match</a>
