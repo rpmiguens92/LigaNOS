@@ -29,6 +29,8 @@ namespace LigaNOS
             services.AddControllersWithViews();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IPlayerRepository, PlayerRepository>();
+            services.AddScoped<IClubRepository, ClubRepository>();
+            services.AddScoped<IMatchRepository, MatchRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -4,31 +4,12 @@ using System.Threading.Tasks;
 
 namespace LigaNOS.Data.Repositories
 {
-    public class MatchRepository : IMatchRepository
+    public class MatchRepository : GenericRepository<Match>, IMatchRepository
     {
-        public Task CreateMatchAsync(Match match)
+        private readonly DataContext _context;
+        public MatchRepository(DataContext context) : base(context)
         {
-            throw new System.NotImplementedException();
-        }
-
-        public Task DeleteMatchAsync(int id)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<IEnumerable<Match>> GetAllMatchesAsync()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<Match> GetMatchByIdAsync(int id)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task UpdateMatchAsync(Match match)
-        {
-            throw new System.NotImplementedException();
+            _context = context;
         }
     }
 }

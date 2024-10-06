@@ -1,8 +1,10 @@
-﻿using LigaNOS.Data.Entities;
-using LigaNOS.Data.Repositories;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using System.Linq;
 using System.Threading.Tasks;
+using LigaNOS.Data.Entities;
+using LigaNOS.Data.Repositories;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace LigaNOS.Controllers
 {
@@ -16,20 +18,19 @@ namespace LigaNOS.Controllers
             _playerRepository = playerRepository;
         }
         // GET: PlayersController
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var players = await _playerRepository.GetAllPlayersAsync();
-            return View(players);
+            return View(_playerRepository.GetAll().OrderBy(p  => p.Name));
         }
         // GET: PlayersController/Details/5
-        public async Task<ActionResult>Details(int? id)
+        public async Task<IActionResult>Details(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var player = await _playerRepository.GetPlayerByIdAsync(id.Value);
+            var player = await _playerRepository.GetByIdAsync(id.Value);
             if (player == null)
                 return NotFound();
 
@@ -37,7 +38,7 @@ namespace LigaNOS.Controllers
         }
 
         // GET: PlayersController/Create
-        public ActionResult Create()
+        public IActionResult Create()
         {
             return View();
         }
@@ -49,16 +50,16 @@ namespace LigaNOS.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _playerRepository.CreatePlayerAsync(player);
+                await _playerRepository.CreateAsync(player);
                 return RedirectToAction(nameof(Index));
             }
             return View(player);
         }
 
         // GET: PlayersController/Edit/5
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(int? id)
         {
-            var player = await _playerRepository.GetPlayerByIdAsync(id);
+            var player = await _playerRepository.GetByIdAsync(id.Value);
             if (player == null)
                 return NotFound();
 
@@ -68,11 +69,29 @@ namespace LigaNOS.Controllers
         // POST: PlayersController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Player player)
+        public async Task<IActionResult> Edit(int id,Player player)
         {
+            if(id != player.Id)
+            {
+                return NotFound();
+            }
             if (ModelState.IsValid)
             {
-                await _playerRepository.UpdatePlayerAsync(player);
+                try
+                {
+                    await _playerRepository.UpdateAsync(player);
+                }
+                catch (DbUpdateConcurrencyException) 
+                {
+                    if (!await _playerRepository.ExistAsync(player.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
                 return RedirectToAction(nameof(Index));
             }
             return View(player);
@@ -85,9 +104,7 @@ namespace LigaNOS.Controllers
             {
                 return NotFound();
             }
-
-
-            var player = await _playerRepository.GetPlayerByIdAsync(id.Value);
+            var player = await _playerRepository.GetByIdAsync(id.Value);
             if (player == null)
                 return NotFound();
 
@@ -99,7 +116,8 @@ namespace LigaNOS.Controllers
         [ValidateAntiForgeryToken]
          public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _playerRepository.DeletePlayerAsync(id);
+            var player = await _playerRepository.GetByIdAsync(id);
+            await _playerRepository.DeleteAsync(player);
             return RedirectToAction(nameof(Index));
         }
     }

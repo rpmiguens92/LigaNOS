@@ -10,7 +10,7 @@ namespace LigaNOS.Data.Entities
     public class Club : IEntity
     {
         [Key]
-        public int ClubId { get; set; }
+        public int Id { get; set; }
 
         [Display(Name = "Symbol")]
         [Required]

@@ -12,29 +12,30 @@ namespace LigaNOS.Controllers
 {
     public class MatchesController : Controller
     {
-        private readonly DataContext _context;
-  
-        public MatchesController(DataContext context)
-        {
-            _context = context;
-        }
-        // GET: MatchesController
-        public async Task<IActionResult> Index()
-        {
-           return View(await _context.Matches.ToListAsync());
+        private readonly IMatchRepository _matchRepository;
 
+        public MatchesController(IMatchRepository matchRepository)
+        {
+            _matchRepository = matchRepository;
         }
+
+            // GET: MatchesController
+            public IActionResult Index()
+            {
+           return View(_matchRepository.GetAll().OrderBy(m => m.MatchDay));
+
+             }
 
         // GET: MatchesController/Details/5
-        public async Task<ActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var match = await _context.Matches
-                .FirstOrDefaultAsync(m => m.MatchId == id);
+            var match = await _matchRepository.GetByIdAsync(id.Value);
+             
             if (match == null)
             {
                 return NotFound();
@@ -44,7 +45,7 @@ namespace LigaNOS.Controllers
         }
 
         // GET: MatchesController/Create
-        public ActionResult Create()
+        public IActionResult Create()
         {
             return View();
         }
@@ -52,26 +53,25 @@ namespace LigaNOS.Controllers
         // POST: MatchesController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CreateAsync(Match match)
+        public async Task<IActionResult> Create(Match match)
         {
             if (ModelState.IsValid)
-            {
-                _context.Add(match);
-                await _context.SaveChangesAsync();
+            { 
+                await _matchRepository.CreateAsync(match);
                 return RedirectToAction(nameof(Index));
             }
             return View(match);
         }
 
         // GET: MatchesController/Edit/5
-        public async Task<ActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var match = await _context.Matches.FindAsync(id);
+            var match = await _matchRepository.GetByIdAsync(id.Value);
             if (match == null)
             {
                 return NotFound();
@@ -82,9 +82,9 @@ namespace LigaNOS.Controllers
         // POST: MatchesController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> EditAsync(int id,Match match)
+        public async Task<IActionResult> Edit (int id,Match match)
         {
-            if (id != match.MatchId)
+            if (id != match.Id)
             {
                 return NotFound();
             }
@@ -93,12 +93,11 @@ namespace LigaNOS.Controllers
             {
                 try
                 {
-                    _context.Update(match);
-                    await _context.SaveChangesAsync();
+                    await _matchRepository.UpdateAsync(match);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!MatchExists(match.MatchId))
+                    if (!await _matchRepository.ExistAsync(match.Id))
                     {
                         return NotFound();
                     }
@@ -112,30 +111,29 @@ namespace LigaNOS.Controllers
             return View(match);
         }
 
-        private bool MatchExists(int id)
-        {
-            return _context.Matches.Any(e => e.MatchId == id);
-        }
-
         // GET: MatchesController/Delete/5
-        public ActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int? id)
         {
-            return View();
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var match = await _matchRepository.GetByIdAsync(id.Value);
+
+            if (match == null)
+            {
+                return NotFound();
+            }
+            return View(match);
         }
 
         // POST: MatchesController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            var match = await _matchRepository.GetByIdAsync(id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }

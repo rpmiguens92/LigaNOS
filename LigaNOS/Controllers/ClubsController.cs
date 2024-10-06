@@ -1,5 +1,6 @@
 ﻿using LigaNOS.Data;
 using LigaNOS.Data.Entities;
+using LigaNOS.Data.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,16 +11,16 @@ namespace LigaNOS.Controllers
 {
     public class ClubsController : Controller
     {
-        private readonly DataContext _context;
-        public ClubsController(DataContext context)
+        private readonly IClubRepository _clubRepository;
+        public ClubsController(IClubRepository clubRepository)
         {
-            _context = context;
+            _clubRepository = clubRepository;
         }
 
         // GET: ClubsController
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _context.Clubs.ToListAsync());
+            return View(_clubRepository.GetAll().OrderBy(c => c.Name));
         }
 
         // GET: ClubsController/Details/5
@@ -30,8 +31,8 @@ namespace LigaNOS.Controllers
                 return NotFound();
             }
 
-            var club = await _context.Clubs
-                .FirstOrDefaultAsync(m => m.ClubId == id);
+            var club = await _clubRepository.GetByIdAsync(id.Value);
+
             if (club == null)
             {
                 return NotFound();
@@ -41,7 +42,7 @@ namespace LigaNOS.Controllers
         }
 
         // GET: ClubsController/Create
-        public ActionResult Create()
+        public IActionResult Create()
         {
             return View();
         }
@@ -53,17 +54,17 @@ namespace LigaNOS.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(club);
-                await _context.SaveChangesAsync();
+
+                await _clubRepository.CreateAsync(club);
                 return RedirectToAction(nameof(Index));
             }
             return View(club);
         }
 
         // GET: ClubsController/Edit/5
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(int? id)
         {
-            var club = await _context.Clubs.FindAsync(id);
+            var club = await _clubRepository.GetByIdAsync(id.Value);
             if (club == null)
             {
                 return NotFound();
@@ -76,7 +77,7 @@ namespace LigaNOS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Club club)
         {
-            if (id != club.ClubId)
+            if (id != club.Id)
             {
                 return NotFound();
             }
@@ -85,12 +86,11 @@ namespace LigaNOS.Controllers
             {
                 try
                 {
-                    _context.Update(club);
-                    await _context.SaveChangesAsync();
+                    await _clubRepository.UpdateAsync(club);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ClubExists(club.ClubId))
+                    if (!await _clubRepository.ExistAsync(club.Id))
                     {
                         return NotFound();
                     }
@@ -100,43 +100,43 @@ namespace LigaNOS.Controllers
                     }
                 }
                 return RedirectToAction(nameof(Index));
+                }
+                return View(club);
             }
-            return View(club);
-        }
 
-        // GET: ClubsController/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
+            // GET: ClubsController/Delete/5
+            public async Task<IActionResult> Delete(int? id)
             {
-                return NotFound();
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                var club = await _clubRepository.GetByIdAsync(id.Value);
+
+                if (club == null)
+                {
+                    return NotFound();
+                }
+
+                return View(club);
             }
 
-            var club = await _context.Clubs
-                .FirstOrDefaultAsync(m => m.ClubId == id);
-            if (club == null)
+            // POST: ClubsController/Delete/5
+            [HttpPost, ActionName("Delete")]
+            [ValidateAntiForgeryToken]
+            public async Task<IActionResult> DeleteConfirmed(int id)
             {
-                return NotFound();
+                var club = await _clubRepository.GetByIdAsync(id);
+                if (club == null)
+                {
+                    return NotFound();
+                }
+
+                await _clubRepository.DeleteAsync(club);
+                return RedirectToAction(nameof(Index));
             }
-
-            return View(club);
         }
-
-        // POST: ClubsController/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var club = await _context.Clubs.FindAsync(id);
-            _context.Clubs.Remove(club);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool ClubExists(int id)
-        {
-            return _context.Clubs.Any(e => e.ClubId == id);
-        }
-    
     }
-}
+
+

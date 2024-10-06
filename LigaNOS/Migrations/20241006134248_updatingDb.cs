@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace LigaNOS.Migrations
 {
-    public partial class updatedatabase : Migration
+    public partial class updatingDb : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -11,7 +11,7 @@ namespace LigaNOS.Migrations
                 name: "Clubs",
                 columns: table => new
                 {
-                    ClubId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ImageFile = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
@@ -19,7 +19,7 @@ namespace LigaNOS.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Clubs", x => x.ClubId);
+                    table.PrimaryKey("PK_Clubs", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -45,7 +45,7 @@ namespace LigaNOS.Migrations
                 name: "Matches",
                 columns: table => new
                 {
-                    MatchId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     HomeClubId = table.Column<int>(type: "int", nullable: false),
                     AwayClubId = table.Column<int>(type: "int", nullable: false),
@@ -57,18 +57,18 @@ namespace LigaNOS.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Matches", x => x.MatchId);
+                    table.PrimaryKey("PK_Matches", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Matches_Clubs_AwayClubId",
                         column: x => x.AwayClubId,
                         principalTable: "Clubs",
-                        principalColumn: "ClubId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Matches_Clubs_HomeClubId",
                         column: x => x.HomeClubId,
                         principalTable: "Clubs",
-                        principalColumn: "ClubId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -76,7 +76,7 @@ namespace LigaNOS.Migrations
                 name: "Players",
                 columns: table => new
                 {
-                    PlayerId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ImageFile = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
@@ -86,12 +86,12 @@ namespace LigaNOS.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Players", x => x.PlayerId);
+                    table.PrimaryKey("PK_Players", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Players_Clubs_ClubId",
                         column: x => x.ClubId,
                         principalTable: "Clubs",
-                        principalColumn: "ClubId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 

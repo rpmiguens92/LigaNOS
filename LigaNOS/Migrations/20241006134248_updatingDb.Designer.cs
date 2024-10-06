@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LigaNOS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241005160706_update-database")]
-    partial class updatedatabase
+    [Migration("20241006134248_updatingDb")]
+    partial class updatingDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,7 +23,7 @@ namespace LigaNOS.Migrations
 
             modelBuilder.Entity("LigaNOS.Data.Entities.Club", b =>
                 {
-                    b.Property<int>("ClubId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -41,14 +41,14 @@ namespace LigaNOS.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("ClubId");
+                    b.HasKey("Id");
 
                     b.ToTable("Clubs");
                 });
 
             modelBuilder.Entity("LigaNOS.Data.Entities.Match", b =>
                 {
-                    b.Property<int>("MatchId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -74,7 +74,7 @@ namespace LigaNOS.Migrations
                     b.Property<string>("Stadium")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("MatchId");
+                    b.HasKey("Id");
 
                     b.HasIndex("AwayClubId");
 
@@ -85,7 +85,7 @@ namespace LigaNOS.Migrations
 
             modelBuilder.Entity("LigaNOS.Data.Entities.Player", b =>
                 {
-                    b.Property<int>("PlayerId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -109,7 +109,7 @@ namespace LigaNOS.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("PlayerId");
+                    b.HasKey("Id");
 
                     b.HasIndex("ClubId");
 

@@ -5,13 +5,9 @@ namespace LigaNOS.Data.Entities
 {
     public class Match : IEntity
     {
-        public int MatchId { get; set; }
+        public int Id { get; set; }
 
         public int HomeClubId { get; set; }
-
-        //[Display(Name = "HomeClub")]
-        //[Required]
-        //public Guid ImageFile { get; set; }
 
         public Club HomeClub { get; set; }
 

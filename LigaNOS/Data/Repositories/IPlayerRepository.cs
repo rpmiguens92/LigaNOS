@@ -5,12 +5,8 @@ using LigaNOS.Models;
 
 namespace LigaNOS.Data.Repositories
 {
-    public interface IPlayerRepository
+    public interface IPlayerRepository : IGenericRepository<Player>
     {
-        Task<IEnumerable<Player>> GetAllPlayersAsync();
-        Task<Player> GetPlayerByIdAsync(int id);
-        Task CreatePlayerAsync(Player player);
-        Task UpdatePlayerAsync(Player player);
-        Task DeletePlayerAsync(int id);
+      
     }
 }
