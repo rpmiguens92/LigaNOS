@@ -1,7 +1,10 @@
 using LigaNOS.Data;
+using LigaNOS.Data.Entities;
 using LigaNOS.Data.Repositories;
+using LigaNOS.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,15 +25,32 @@ namespace LigaNOS
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddIdentity<User, IdentityRole>(cfg =>
+            {
+                cfg.User.RequireUniqueEmail = true;
+                cfg.Password.RequireDigit = false;
+                cfg.Password.RequiredUniqueChars = 0;
+                cfg.Password.RequireLowercase = false;
+                cfg.Password.RequireUppercase = false;
+                cfg.Password.RequireNonAlphanumeric = false;
+                cfg.Password.RequiredLength = 6;
+            }).AddEntityFrameworkStores<DataContext>();
+
+
             services.AddDbContext<DataContext>(cfg =>
             {
                 cfg.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection"));
             });
-            services.AddControllersWithViews();
-            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddTransient<Seed>();
+
+          
             services.AddScoped<IPlayerRepository, PlayerRepository>();
             services.AddScoped<IClubRepository, ClubRepository>();
             services.AddScoped<IMatchRepository, MatchRepository>();
+           
+            services.AddScoped<IUserHelper, UserHelper>();
+
+            services.AddControllersWithViews();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,6 +70,7 @@ namespace LigaNOS
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

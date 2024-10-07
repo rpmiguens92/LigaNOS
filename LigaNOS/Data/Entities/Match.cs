@@ -7,11 +7,7 @@ namespace LigaNOS.Data.Entities
     {
         public int Id { get; set; }
 
-        public int HomeClubId { get; set; }
-
         public Club HomeClub { get; set; }
-
-        public int AwayClubId { get; set; }
 
         public Club AwayClub { get; set; }
 
@@ -24,6 +20,7 @@ namespace LigaNOS.Data.Entities
         public string Stadium { get; set; }
 
         public string MatchTime { get; set; }
+        //public User User { get; set; }
 
     }
 }

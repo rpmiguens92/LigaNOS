@@ -26,5 +26,6 @@ namespace LigaNOS.Data.Entities
         public string Coach { get; set; }
       
         public ICollection<Player> Players { get; set; }
+        //public User User { get; set; }
     }
 }

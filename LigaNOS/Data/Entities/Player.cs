@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LigaNOS.Data.Entities
 {
-    public class Player  : IEntity
+    public class Player : IEntity
     {
         [Key]
         public int Id { get; set; }
@@ -35,6 +35,6 @@ namespace LigaNOS.Data.Entities
         [Required]
         
         public Club Clubs { get; set; }
-       
+        //public User User { get; set; }
     }
 }
