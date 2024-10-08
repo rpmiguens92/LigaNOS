@@ -4,14 +4,16 @@ using LigaNOS.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace LigaNOS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241008111245_addClubSeed")]
+    partial class addClubSeed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,9 +40,6 @@ namespace LigaNOS.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Stadium")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
@@ -80,16 +79,11 @@ namespace LigaNOS.Migrations
                     b.Property<string>("Stadium")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("AwayClubId");
 
                     b.HasIndex("HomeClubId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Matches");
                 });
@@ -354,15 +348,9 @@ namespace LigaNOS.Migrations
                         .WithMany()
                         .HasForeignKey("HomeClubId");
 
-                    b.HasOne("LigaNOS.Data.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
                     b.Navigation("AwayClub");
 
                     b.Navigation("HomeClub");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("LigaNOS.Data.Entities.Player", b =>

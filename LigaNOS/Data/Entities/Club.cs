@@ -24,8 +24,10 @@ namespace LigaNOS.Data.Entities
         [Required]
         [StringLength(50, ErrorMessage = "The field {0} can contain {1} characters length.")]
         public string Coach { get; set; }
-      
+
+        public string Stadium { get; set; }
+
         public ICollection<Player> Players { get; set; }
-        //public User User { get; set; }
+        public User User { get; set; }
     }
 }

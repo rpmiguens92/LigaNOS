@@ -20,7 +20,8 @@ namespace LigaNOS.Data.Entities
         public string Stadium { get; set; }
 
         public string MatchTime { get; set; }
-        //public User User { get; set; }
+        
+        public User User { get; set; }
 
     }
 }
