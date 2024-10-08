@@ -43,12 +43,13 @@ namespace LigaNOS
             });
             services.AddTransient<Seed>();
 
-          
+            services.AddScoped<IUserHelper, UserHelper>();
+
             services.AddScoped<IPlayerRepository, PlayerRepository>();
             services.AddScoped<IClubRepository, ClubRepository>();
             services.AddScoped<IMatchRepository, MatchRepository>();
            
-            services.AddScoped<IUserHelper, UserHelper>();
+            
 
             services.AddControllersWithViews();
         }

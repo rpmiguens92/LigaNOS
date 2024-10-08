@@ -45,6 +45,7 @@ namespace LigaNOS.Controllers
         public IActionResult Create()
         {
             return View();
+
         }
 
         // POST: ClubsController/Create

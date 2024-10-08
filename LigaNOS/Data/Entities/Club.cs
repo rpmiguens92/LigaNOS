@@ -16,7 +16,7 @@ namespace LigaNOS.Data.Entities
         [Required]
         public Guid ImageFile { get; set; }
 
-
+        [Display(Name = "Club")]
         [Required]
         [StringLength(50, ErrorMessage = "The field {0} can contain {1} characters length.")]
         public string Name { get; set; }

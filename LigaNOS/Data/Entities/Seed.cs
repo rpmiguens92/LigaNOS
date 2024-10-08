@@ -42,9 +42,29 @@ namespace LigaNOS.Data.Entities
                     throw new InvalidOperationException("Could not create the user in seeder");
                 }
             }
-        }
-        
+            if (!_context.Players.Any())
+            {
+                AddPlayer("Cristiano Ronaldo", user);
+                AddPlayer("Pepe", user);
+                await _context.SaveChangesAsync(); // Ensure changes are saved to the database
 
+            }
+
+
+        }
+
+        private void AddPlayer(string name, User user)
+        {
+            _context.Players.Add(new Player
+            {
+                Name = name,
+                DateOfBirth = DateTime.Today,
+                Position = "Forward",
+                ClubId = _context.Clubs.FirstOrDefault().Id,
+                User = user,
+            });
+          
+        }
     }
 }
    

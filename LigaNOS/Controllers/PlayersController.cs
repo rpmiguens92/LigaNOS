@@ -2,7 +2,9 @@
 using System.Threading.Tasks;
 using LigaNOS.Data.Entities;
 using LigaNOS.Data.Repositories;
+using LigaNOS.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -12,15 +14,26 @@ namespace LigaNOS.Controllers
     {
 
         private readonly IPlayerRepository _playerRepository;
+        private readonly IClubRepository _clubRepository;
 
-        public PlayersController(IPlayerRepository playerRepository)
+        public PlayersController(IPlayerRepository playerRepository, IClubRepository clubRepository)
         {
             _playerRepository = playerRepository;
+            _clubRepository = clubRepository;
         }
         // GET: PlayersController
         public IActionResult Index()
         {
-            return View(_playerRepository.GetAll().OrderBy(p  => p.Name));
+            var players = _playerRepository.GetAll().Include(p => p.Clubs).OrderBy(p => p.Name).ToList();
+            var clubs = _clubRepository.GetAll().OrderBy(c => c.Name).ToList();
+
+            var viewModel = new PlayersAndClubsViewModel
+            {
+                Players = players,
+                Clubs = clubs
+            };
+
+            return View(viewModel);
         }
         // GET: PlayersController/Details/5
         public async Task<IActionResult>Details(int? id)
@@ -40,6 +53,7 @@ namespace LigaNOS.Controllers
         // GET: PlayersController/Create
         public IActionResult Create()
         {
+            ViewBag.Clubs = new SelectList(_clubRepository.GetAll(),"Id", "Name");
             return View();
         }
 
@@ -53,6 +67,7 @@ namespace LigaNOS.Controllers
                 await _playerRepository.CreateAsync(player);
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.Clubs = new SelectList(_clubRepository.GetAll(),"Id", "Name", player.ClubId);
             return View(player);
         }
 
