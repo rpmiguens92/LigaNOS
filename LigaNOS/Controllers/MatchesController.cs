@@ -20,10 +20,13 @@ namespace LigaNOS.Controllers
         }
 
             // GET: MatchesController
-            public IActionResult Index()
+            public async Task<IActionResult> Index()
             {
-           return View(_matchRepository.GetAll().OrderBy(m => m.MatchDay));
-
+            var matches = await _matchRepository.GetAll()
+            .Include(m => m.HomeClub)
+            .Include(m => m.AwayClub)
+            .ToListAsync();
+            return View(matches);
              }
 
         // GET: MatchesController/Details/5

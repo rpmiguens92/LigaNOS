@@ -9,11 +9,10 @@ namespace LigaNOS.Data.Entities
 {
     public class Club : IEntity
     {
-        [Key]
         public int Id { get; set; }
 
         [Display(Name = "Symbol")]
-        [Required]
+        //[Required]
         public Guid ImageFile { get; set; }
 
         [Display(Name = "Club")]

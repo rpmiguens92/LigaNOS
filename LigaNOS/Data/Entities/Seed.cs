@@ -5,6 +5,8 @@ using LigaNOS.Helpers;
 using System.Linq;
 using System.Xml.Linq;
 using static System.Reflection.Metadata.BlobBuilder;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using LigaNOS.Controllers;
 
 namespace LigaNOS.Data.Entities
 {
@@ -45,77 +47,98 @@ namespace LigaNOS.Data.Entities
             }
             if (!_context.Clubs.Any())
             {
-                AddClub("club", user);
-                AddClub("club", user);
-                AddClub("club", user);
-                await _context.SaveChangesAsync();
+                AddClub("Sport Lisboa e Benfica", "Jorge Jesus", "Estádio do Benfica", user);
+                AddClub("Ericeirense", "Jorge Deus", "Estádio do Ericeira", user);
+                AddClub("FC Porto", "Sérgio Conceição", "Estádio do Dragão", user);
+                AddClub("Estrela da Amadora", "Bernardo Cruz", "Estádio da Amadora", user);
 
+                await _context.SaveChangesAsync();
             }
+
+            var clubs = _context.Clubs.ToList();
+            if (clubs.Count < 2)  
+            {
+                throw new InvalidOperationException("Not enough clubs to create matches.");
+            }
+
             if (!_context.Players.Any())
             {
-                AddPlayer("Cristiano Ronaldo", user);
-                AddPlayer("Pepe", user);
-                AddPlayer("Luís Figo", user);
-                await _context.SaveChangesAsync();  
-
+                foreach (var club in clubs)
+                {
+                    AddPlayer(club, user);
+                }
+                await _context.SaveChangesAsync();
             }
-       
-        }
 
-        private void AddClub(string name, User user)
-        {
-            var clubName = GenerateRandomClubName();
-            _context.Clubs.Add(new Club
+            if (!_context.Matches.Any())
             {
-                Name = clubName,
-                Coach = GenerateRandomCoach(),
-                Stadium = $"Estádio do {clubName}", //ensure the stadium has the same name as the club
-                User = user,
-            });
+                AddMatch(user);
+                await _context.SaveChangesAsync();
+            }
         }
 
-        private void AddPlayer(string name, User user)
+        private void AddClub(string name, string coach, string stadium,User user)
+        {
+                _context.Clubs.Add(new Club
+                {
+                    Name = name,
+                    Coach = coach,  
+                    Stadium = stadium,
+                    User = user,
+                });
+        }
+
+        private void AddPlayer( Club clubs, User user)
         {
             _context.Players.Add(new Player
             {
-                Name = name,
-                DateOfBirth = DateTime.Today,
+                Name = GenerateRandomPlayerName(),
+                DateOfBirth = GenerateRandomDateOfBirth(),
                 Position = GenerateRandomPosition(),
-                ClubId = _context.Clubs.FirstOrDefault().Id,
+                ClubId = clubs.Id,
                 User = user,
             });
           
         }
 
-        private void AddMatch(string name, User user)
-        {
+        private void AddMatch( User user)
+        { // Obter todos os clubes do banco de dados
+            var clubs = _context.Clubs.ToList();
 
-            var homeClubName = GenerateRandomClub();
-            var awayClubName = GenerateRandomClub();
-
-            // ensure the away club is different from the home club
-            while (awayClubName == homeClubName)
+            if (clubs.Count < 2)
             {
-                awayClubName = GenerateRandomClub();
+                throw new InvalidOperationException("Not enough clubs to create a match.");
             }
 
-            var homeClub = _context.Clubs.FirstOrDefault(c => c.Name == homeClubName);
-            var awayClub = _context.Clubs.FirstOrDefault(c => c.Name == awayClubName);
+            // Seleciona dois clubes aleatórios, garantindo que sejam diferentes
+            var homeClub = clubs[_random.Next(clubs.Count)];
+            Club awayClub;
 
-            if (homeClub == null || awayClub == null)
+            do
             {
-                throw new InvalidOperationException("One or both clubs not found in the database.");
-            }
+                awayClub = clubs[_random.Next(clubs.Count)];
+            } while (awayClub.Id == homeClub.Id);  // Garante que os clubes não sejam os mesmos
 
             _context.Matches.Add(new Match
             {
-                MatchDay = DateTime.Today,
+                MatchDay = GenerateRandomMatchDay(),
                 MatchTime = GenerateRandomMatchTime(),
                 HomeClub = homeClub,
                 AwayClub = awayClub,
-                Stadium = homeClub.Stadium, // set the stadium to the home club's stadium
+                Stadium = homeClub.Stadium, // Definir o estádio para o estádio do clube da casa
                 User = user,
             });
+        }
+        private DateTime GenerateRandomDateOfBirth()//returns a random date between 18 and 40 years ago
+        {
+            int daysToSubtract = _random.Next(18 * 365, 40 * 365);
+            return DateTime.Today.AddDays(-daysToSubtract);
+        }
+        private string GenerateRandomPlayerName()
+        {
+            string[] playerNames = { "DiMaria", "Pepe", "CR7", "Moreira", "Mantorras", "Figo"};
+            string playerName = playerNames[_random.Next(playerNames.Length)];
+            return playerName;
         }
         private string GenerateRandomCoach()
         {
@@ -141,19 +164,20 @@ namespace LigaNOS.Data.Entities
             return positions[_random.Next(positions.Length)];
         }
 
-        private string GenerateRandomClub()
-        {
-            string[] Clubs = { "FC Porto", "SL Benfica", "Sporting CP", "SC Braga", "Vitória SC", "Boavista FC", "CD Tondela", "FC Famalicão", "Moreirense FC", "CD Santa Clara", "CS Marítimo", "CD Nacional", "Rio Ave FC", "Gil Vicente FC", "FC Paços de Ferreira", "Portimonense SC", "CD Aves", "Belenenses SAD", "CD Feirense", "GD Chaves" };
-            int index = _random.Next(Clubs.Length);
-            return Clubs[index];
-        }
+     
 
         private string GenerateRandomMatchTime()
         {
             string[] matchTimes = { "19:15", "19:30", "19:45", "20:00","20:15","20:30","20:45","21:00","21:15" };
             return matchTimes[_random.Next(matchTimes.Length)];
         }
+        
+        private DateTime GenerateRandomMatchDay()//returns a random date between today and 30 days from now
+        {
+            int daysToAdd = _random.Next(0, 31);
+            return DateTime.Today.AddDays(daysToAdd);
 
+        }
     }
 }
    
