@@ -1,11 +1,15 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using LigaNOS.Data;
 using LigaNOS.Data.Entities;
 using LigaNOS.Data.Repositories;
+using LigaNOS.Helpers;
 using LigaNOS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+ 
 
 
 namespace LigaNOS.Controllers
@@ -15,11 +19,17 @@ namespace LigaNOS.Controllers
 
         private readonly IPlayerRepository _playerRepository;
         private readonly IClubRepository _clubRepository;
-
-        public PlayersController(IPlayerRepository playerRepository, IClubRepository clubRepository)
+        private readonly IConverterHelper _converterHelper;
+        private readonly IBlobHelper _blobHelper;
+        private readonly IUserHelper _userHelper;
+        private readonly DataContext _context;
+        public PlayersController(IPlayerRepository playerRepository, IClubRepository clubRepository, IUserHelper userHelper, IConverterHelper converterHelper, DataContext context)
         {
             _playerRepository = playerRepository;
             _clubRepository = clubRepository;
+            _userHelper = userHelper;
+            _converterHelper = converterHelper;
+            _context = context;
         }
         // GET: PlayersController
         public IActionResult Index()
@@ -60,45 +70,65 @@ namespace LigaNOS.Controllers
         // POST: PlayersController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Player player)
+        public async Task<IActionResult> Create(PlayerViewModel model)
         {
             if (ModelState.IsValid)
             {
+                Guid imageId = Guid.Empty;
+
+                if (model.ImageFile != null && model.ImageFile.Length > 0)
+                {
+                    imageId = await _blobHelper.UploadBlobAsync(model.ImageFile, "players");
+                }
+                var player = _converterHelper.ToPlayer(model, imageId, true);
+                player.User = await _userHelper.GetUserByEmailAsync(User.Identity.Name);
                 await _playerRepository.CreateAsync(player);
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewBag.Clubs = new SelectList(_clubRepository.GetAll(),"Id", "Name", player.ClubId);
-            return View(player);
+            ViewBag.Clubs = new SelectList(_clubRepository.GetAll(),"Id", "Name", model.ClubId);
+           
+            return View(model);
         }
 
         // GET: PlayersController/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             var player = await _playerRepository.GetByIdAsync(id.Value);
-            if (player == null)
-                return NotFound();
 
-            return View(player);
+            if (player == null)
+            {
+                return NotFound();
+            }
+            var model = _converterHelper.ToPlayerViewModel(player);
+            return View(model);
         }
 
         // POST: PlayersController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,Player player)
-        {
-            if(id != player.Id)
-            {
-                return NotFound();
-            }
+        public async Task<IActionResult> Edit(PlayerViewModel model)
+        { 
             if (ModelState.IsValid)
             {
                 try
                 {
+                    Guid imageId = Guid.Empty;
+
+                    if (model.ImageFile != null && model.ImageFile.Length > 0)
+                    {
+
+                        imageId = await _blobHelper.UploadBlobAsync(model.ImageFile, "players");
+
+                    }
+                    var player = _converterHelper.ToPlayer(model, imageId, false);
+                    //player.User = await _userHelper.GetUserByEmailAsync(User.Identity.Name);
+                    player.User = _context.Users.FirstOrDefault();
                     await _playerRepository.UpdateAsync(player);
                 }
-                catch (DbUpdateConcurrencyException) 
+                catch (DbUpdateConcurrencyException)
                 {
-                    if (!await _playerRepository.ExistAsync(player.Id))
+                    if (!await _playerRepository.ExistAsync(model.Id))
                     {
                         return NotFound();
                     }
@@ -109,7 +139,7 @@ namespace LigaNOS.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(player);
+            return View(model);
         }
 
         // GET: PlayersController/Delete/5

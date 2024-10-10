@@ -4,6 +4,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Http;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace LigaNOS.Data.Entities
 {
@@ -12,7 +13,7 @@ namespace LigaNOS.Data.Entities
         public int Id { get; set; }
 
         [Display(Name = "Symbol")]
-        //[Required]
+        [Required]
         public Guid ImageFile { get; set; }
 
         [Display(Name = "Club")]
@@ -28,5 +29,7 @@ namespace LigaNOS.Data.Entities
 
         public ICollection<Player> Players { get; set; }
         public User User { get; set; }
+
+        
     }
 }

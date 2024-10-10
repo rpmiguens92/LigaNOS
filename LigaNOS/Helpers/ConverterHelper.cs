@@ -1,0 +1,108 @@
+﻿using LigaNOS.Data.Entities;
+using LigaNOS.Models;
+using Microsoft.AspNetCore.Http;
+using System;
+using System.IO;
+
+namespace LigaNOS.Helpers
+{
+    public class ConverterHelper : IConverterHelper
+    {
+        public Club ToClub(ClubViewModel model, Guid path, bool isNew)
+        {
+            return new Club
+            {
+                Id = isNew ? 0 : model.Id,
+                ImageFile = path,
+                Name = model.Name,
+                Coach = model.Coach,
+                Stadium = model.Stadium,
+
+            };
+        }
+
+        public Player ToPlayer(PlayerViewModel model, Guid path, bool isNew)
+        {
+            return new Player
+            {
+
+                Id = isNew ? 0 : model.Id,
+                ImageFile = path,
+                Name = model.Name,
+                DateOfBirth = model.DateOfBirth,
+                Position = model.Position,
+                ClubId = model.ClubId,
+
+            };
+        }
+
+        public Match ToMatch(MatchViewModel model, Guid path, bool isNew)
+        {
+            return new MatchViewModel
+            {
+                Id = isNew ? 0 : model.Id,
+                HomeClub = model.HomeClub,
+                AwayClub = model.AwayClub,
+                HomeGoals = model.HomeGoals,
+                AwayGoals = model.AwayGoals,
+                MatchDay = model.MatchDay,
+                Stadium = model.Stadium,
+                MatchTime = model.MatchTime,
+
+            };
+
+        }
+
+
+        public ClubViewModel ToClubViewModel(Club club)
+        {
+            return new ClubViewModel
+            {
+                Id = club.Id,
+                ImageFile = ConvertToIFormFile(club.ImageFile),
+                Name = club.Name,
+                Coach = club.Coach,
+                Stadium = club.Stadium,
+            };
+        }
+
+        private IFormFile ConvertToIFormFile(Guid imageFile)
+        {//conversion Iform to Guid
+                var stream = new MemoryStream(); // Replace with actual file stream
+                return new FormFile(stream, 0, stream.Length, null, imageFile.ToString());
+
+        }
+
+        public PlayerViewModel ToPlayerViewModel(Player player)
+        {
+             return new PlayerViewModel
+             {
+                 Id = player.Id,
+                 ImageFile = ConvertToIFormFile(player.ImageFile),
+                 Name = player.Name,
+                 DateOfBirth = player.DateOfBirth,
+                 Position = player.Position,
+                 ClubId = player.ClubId,
+             };
+        }
+
+        public MatchViewModel ToMatchViewModel(Match match)
+        {
+            return new MatchViewModel
+            {
+                Id = match.Id,
+                HomeClub = match.HomeClub,
+                AwayClub = match.AwayClub,
+                HomeGoals = match.HomeGoals,
+                AwayGoals = match.AwayGoals,
+                MatchDay = match.MatchDay,
+                Stadium = match.Stadium,
+                MatchTime = match.MatchTime,
+                    
+            };
+   
+        }
+
+        
+    }
+}

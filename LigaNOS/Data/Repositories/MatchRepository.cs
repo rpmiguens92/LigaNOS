@@ -1,5 +1,7 @@
 ﻿using LigaNOS.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace LigaNOS.Data.Repositories
@@ -10,6 +12,10 @@ namespace LigaNOS.Data.Repositories
         public MatchRepository(DataContext context) : base(context)
         {
             _context = context;
+        }
+        public IQueryable GetAllWithUsers()
+        {
+            return _context.Clubs.Include(c => c.User);
         }
     }
 }

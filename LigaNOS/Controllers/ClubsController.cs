@@ -6,15 +6,25 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
+using LigaNOS.Helpers;
+using LigaNOS.Models;
+using System;
+using System.Security.Cryptography;
 
 namespace LigaNOS.Controllers
 {
     public class ClubsController : Controller
     {
         private readonly IClubRepository _clubRepository;
-        public ClubsController(IClubRepository clubRepository)
+        private readonly IUserHelper _userHelper;
+        private readonly IConverterHelper _converterHelper;
+        private readonly IBlobHelper _blobHelper;
+        public ClubsController(IClubRepository clubRepository, IUserHelper userHelper, IConverterHelper converterHelper, IBlobHelper blobHelper)
         {
             _clubRepository = clubRepository;
+            _userHelper = userHelper;
+            _converterHelper = converterHelper;
+            _blobHelper = blobHelper;
         }
 
         // GET: ClubsController
@@ -51,15 +61,22 @@ namespace LigaNOS.Controllers
         // POST: ClubsController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Club club)
+        public async Task<IActionResult> Create(ClubViewModel model)
         {
             if (ModelState.IsValid)
             {
+                Guid imageId = Guid.Empty;
 
+                if (model.ImageFile != null && model.ImageFile.Length > 0)
+                {
+                    imageId = await _blobHelper.UploadBlobAsync(model.ImageFile, "clubs");
+
+                }
+                var club = _converterHelper.ToClub(model, imageId, true);
                 await _clubRepository.CreateAsync(club);
                 return RedirectToAction(nameof(Index));
             }
-            return View(club);
+            return View(model);
         }
 
         // GET: ClubsController/Edit/5
@@ -70,28 +87,38 @@ namespace LigaNOS.Controllers
             {
                 return NotFound();
             }
-            return View(club);
+            var model = _converterHelper.ToClubViewModel(club);
+            return View(model);
         }
 
         // POST: ClubsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Club club)
+        public async Task<IActionResult> Edit(ClubViewModel model)
         {
-            if (id != club.Id)
-            {
-                return NotFound();
-            }
+ 
 
             if (ModelState.IsValid)
             {
                 try
                 {
+                    Guid imageId = Guid.Empty;
+
+                    if (model.ImageFile != null && model.ImageFile.Length > 0)
+                    {
+
+                        imageId = await _blobHelper.UploadBlobAsync(model.ImageFile, "clubs");
+
+
+                    }
+                    var club = _converterHelper.ToClub(model, imageId, false);
+
+                    club.User = await _userHelper.GetUserByEmailAsync("miguens.rp@gmail.com");
                     await _clubRepository.UpdateAsync(club);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!await _clubRepository.ExistAsync(club.Id))
+                    if (!await _clubRepository.ExistAsync(model.Id))
                     {
                         return NotFound();
                     }
@@ -102,7 +129,7 @@ namespace LigaNOS.Controllers
                 }
                 return RedirectToAction(nameof(Index));
                 }
-                return View(club);
+                return View(model);
             }
 
             // GET: ClubsController/Delete/5
