@@ -7,6 +7,6 @@ namespace LigaNOS.Data.Repositories
 {
     public interface IMatchRepository : IGenericRepository<Match>
     {
-        public IQueryable GetAllWithUsers();
+        public IQueryable<Match> GetAllWithUsers();
     }
 }

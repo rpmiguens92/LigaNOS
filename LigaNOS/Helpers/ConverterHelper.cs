@@ -91,8 +91,8 @@ namespace LigaNOS.Helpers
             return new MatchViewModel
             {
                 Id = match.Id,
-                HomeClub = match.HomeClub,
-                AwayClub = match.AwayClub,
+                HomeClub = match.HomeClub.Name,
+                AwayClub = match.AwayClub.Name,
                 HomeGoals = match.HomeGoals,
                 AwayGoals = match.AwayGoals,
                 MatchDay = match.MatchDay,

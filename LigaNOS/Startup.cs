@@ -50,8 +50,9 @@ namespace LigaNOS
             services.AddScoped<IPlayerRepository, PlayerRepository>();
             services.AddScoped<IClubRepository, ClubRepository>();
             services.AddScoped<IMatchRepository, MatchRepository>();
-           
-            
+            services.AddScoped<IStatRepository, StatRepository>();
+
+
 
             services.AddControllersWithViews();
         }

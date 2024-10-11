@@ -13,9 +13,9 @@ namespace LigaNOS.Data.Repositories
         {
             _context = context;
         }
-        public IQueryable GetAllWithUsers()
+        public IQueryable<Match> GetAllWithUsers()
         {
-            return _context.Clubs.Include(c => c.User);
+            return _context.Matches.Include(m => m.HomeClub).Include(m => m.AwayClub);
         }
     }
 }

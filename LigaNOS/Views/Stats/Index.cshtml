@@ -1,0 +1,54 @@
+﻿@model LigaNOS.Models.StatViewModel
+ 
+  
+<h2>Realized Games</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Home Team</th>
+            <th>Away Team</th>
+            <th>Home Goals</th>
+            <th>Away Goals</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Stadium</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var match in Model.MatchResults)
+        {
+            <tr>
+                <td>@match.HomeClub</td>
+                <td>@match.AwayClub</td>
+                <td>@match.HomeGoals</td>
+                <td>@match.AwayGoals</td>
+                <td>@match.MatchDate.ToShortDateString()</td>
+                <td>@match.MatchTime</td>
+                <td>@match.Stadium</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h2>Score</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Club Name</th>
+            <th>Points</th>
+            <th>Goals Scored</th>
+            <th>Goals Conceded</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var club in Model.ClubStats)
+        {
+            <tr>
+                <td>@club.ClubName</td>
+                <td>@club.Points</td>
+                <td>@club.GoalsScored</td>
+                <td>@club.GoalsConceded</td>
+            </tr>
+        }
+    </tbody>
+</table>

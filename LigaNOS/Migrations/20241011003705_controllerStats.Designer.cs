@@ -4,14 +4,16 @@ using LigaNOS.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace LigaNOS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241011003705_controllerStats")]
+    partial class controllerStats
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,15 +44,10 @@ namespace LigaNOS.Migrations
                     b.Property<string>("Stadium")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("StatId")
-                        .HasColumnType("int");
-
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("StatId");
 
                     b.HasIndex("UserId");
 
@@ -85,9 +82,6 @@ namespace LigaNOS.Migrations
                     b.Property<string>("Stadium")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("StatId")
-                        .HasColumnType("int");
-
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
@@ -96,8 +90,6 @@ namespace LigaNOS.Migrations
                     b.HasIndex("AwayClubId");
 
                     b.HasIndex("HomeClubId");
-
-                    b.HasIndex("StatId");
 
                     b.HasIndex("UserId");
 
@@ -385,10 +377,6 @@ namespace LigaNOS.Migrations
 
             modelBuilder.Entity("LigaNOS.Data.Entities.Club", b =>
                 {
-                    b.HasOne("LigaNOS.Data.Entities.Stat", null)
-                        .WithMany("Clubs")
-                        .HasForeignKey("StatId");
-
                     b.HasOne("LigaNOS.Data.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
@@ -405,10 +393,6 @@ namespace LigaNOS.Migrations
                     b.HasOne("LigaNOS.Data.Entities.Club", "HomeClub")
                         .WithMany()
                         .HasForeignKey("HomeClubId");
-
-                    b.HasOne("LigaNOS.Data.Entities.Stat", null)
-                        .WithMany("Matches")
-                        .HasForeignKey("StatId");
 
                     b.HasOne("LigaNOS.Data.Entities.User", "User")
                         .WithMany()
@@ -525,13 +509,6 @@ namespace LigaNOS.Migrations
             modelBuilder.Entity("LigaNOS.Data.Entities.Club", b =>
                 {
                     b.Navigation("Players");
-                });
-
-            modelBuilder.Entity("LigaNOS.Data.Entities.Stat", b =>
-                {
-                    b.Navigation("Clubs");
-
-                    b.Navigation("Matches");
                 });
 #pragma warning restore 612, 618
         }
