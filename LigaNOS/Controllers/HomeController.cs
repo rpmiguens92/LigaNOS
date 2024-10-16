@@ -1,4 +1,4 @@
-﻿using LigaNOS.Models;
+﻿using LigaNOS.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;

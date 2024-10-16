@@ -12,7 +12,7 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.ImageFile)
+                @Html.DisplayNameFor(model => model.ImageFileId)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Name)
@@ -20,7 +20,10 @@
             <th>
                 @Html.DisplayNameFor(model => model.Coach)
             </th>
-           
+            <th>
+                @Html.DisplayNameFor(model => model.Stadium)
+            </th>
+
             <th></th>
         </tr>
     </thead>
@@ -29,13 +32,16 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.ImageFile)
+                    <img src="@item.ImageFullPath" alt="@item.Name "Symbol" style="width: 100px; height: auto;" />
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Coach)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Stadium)
                 </td>
 
                 <td>

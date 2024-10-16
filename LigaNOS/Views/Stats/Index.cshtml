@@ -21,7 +21,7 @@
                 <td>@match.HomeClub</td>
                 <td>@match.AwayClub</td>
                 <td>@match.HomeGoals</td>
-                <td>@match.AwayGoals</td>
+                <td>@match.AwayClubGoals</td>
                 <td>@match.MatchDate.ToShortDateString()</td>
                 <td>@match.MatchTime</td>
                 <td>@match.Stadium</td>
@@ -38,6 +38,9 @@
             <th>Points</th>
             <th>Goals Scored</th>
             <th>Goals Conceded</th>
+            <th>Wins</th>
+            <th>Losses</th>
+            <th>Draws</th>
         </tr>
     </thead>
     <tbody>
@@ -48,6 +51,9 @@
                 <td>@club.Points</td>
                 <td>@club.GoalsScored</td>
                 <td>@club.GoalsConceded</td>
+                <td>@club.Wins</td>
+                <td>@club.Losses</td>
+                <td>@club.Draws</td>
             </tr>
         }
     </tbody>

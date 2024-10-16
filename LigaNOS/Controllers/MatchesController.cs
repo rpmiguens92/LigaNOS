@@ -18,19 +18,21 @@ namespace LigaNOS.Controllers
         private readonly IUserHelper _userHelper;
         private readonly IBlobHelper _blobHelper;
         private readonly IConverterHelper _converterHelper;
+        private readonly IClubRepository _clubRepository;
 
-        public MatchesController(IMatchRepository matchRepository, IUserHelper userHelper, IBlobHelper blobHelper, IConverterHelper converterHelper)
+        public MatchesController(IMatchRepository matchRepository, IUserHelper userHelper, IBlobHelper blobHelper, IConverterHelper converterHelper, IClubRepository clubRepository)
         {
             _matchRepository = matchRepository;
             _userHelper = userHelper;
             _blobHelper = blobHelper;
             _converterHelper = converterHelper;
+            _clubRepository = clubRepository;
         }
 
-            // GET: MatchesController
-            public async Task<IActionResult> Index()
+        // GET: MatchesController
+        public async Task<IActionResult> Index()
             {
-            var matches = await _matchRepository.GetAll()
+            var matches = await _matchRepository.GetAllWithClubs()
             .Include(m => m.HomeClub)
             .Include(m => m.AwayClub)
          
@@ -59,7 +61,18 @@ namespace LigaNOS.Controllers
         // GET: MatchesController/Create
         public IActionResult Create()
         {
-            return View();
+             
+            var matchGenerator = new MatchGenerator(_clubRepository);
+            var match = matchGenerator.GenerateMatch();
+
+            var matchViewModel = new MatchViewModel
+            {
+                HomeClub = match.HomeClub,
+                AwayClub = match.AwayClub,
+                Stadium = match.Stadium,
+            };
+
+            return View(matchViewModel);
         }
 
         // POST: MatchesController/Create
@@ -67,23 +80,50 @@ namespace LigaNOS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(MatchViewModel model)
         {
+            //if (ModelState.IsValid)
+            //{
+
+            //    Guid imageId = Guid.Empty;
+
+            //    if (model.ImageFile != null && model.ImageFile.Length > 0)
+            //    {
+            //        imageId = await _blobHelper.UploadBlobAsync(model.ImageFile, "matches");
+            //    }
+
+            //    var match = _converterHelper.ToMatch(model, imageId, true);
+
+            //    match.User = await _userHelper.GetUserByEmailAsync("miguens.rp@gmail.com");
+            //    await _matchRepository.CreateAsync(match);
+            //    return RedirectToAction(nameof(Index));
+            //}
+            //return View(model);
+
             if (ModelState.IsValid)
             {
+                var homeClub = await _clubRepository.GetByIdAsync(model.HomeClubId);
+                var awayClub = await _clubRepository.GetByIdAsync(model.AwayClubId);
 
-                Guid imageId = Guid.Empty;
-
-                if (model.ImageFile != null && model.ImageFile.Length > 0)
+                if (homeClub == null || awayClub == null)
                 {
-                    imageId = await _blobHelper.UploadBlobAsync(model.ImageFile, "matches");
+                    return NotFound();
                 }
 
-                var match = _converterHelper.ToMatch(model, imageId, true);
+                var match = new Match
+                {
+                    HomeClub = homeClub,
+                    AwayClub = awayClub,
+                    MatchDay = model.MatchDay,
+                    MatchTime = model.MatchTime
+                };
 
-                match.User = await _userHelper.GetUserByEmailAsync("miguens.rp@gmail.com");
                 await _matchRepository.CreateAsync(match);
+
+
                 return RedirectToAction(nameof(Index));
             }
+
             return View(model);
+            
         }
 
         // GET: MatchesController/Edit/5

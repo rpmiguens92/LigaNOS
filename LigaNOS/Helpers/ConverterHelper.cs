@@ -13,7 +13,7 @@ namespace LigaNOS.Helpers
             return new Club
             {
                 Id = isNew ? 0 : model.Id,
-                ImageFile = path,
+                ImageFileId = path,
                 Name = model.Name,
                 Coach = model.Coach,
                 Stadium = model.Stadium,
@@ -27,7 +27,7 @@ namespace LigaNOS.Helpers
             {
 
                 Id = isNew ? 0 : model.Id,
-                ImageFile = path,
+                ImageFileId = path,
                 Name = model.Name,
                 DateOfBirth = model.DateOfBirth,
                 Position = model.Position,
@@ -44,13 +44,12 @@ namespace LigaNOS.Helpers
                 HomeClub = model.HomeClub,
                 AwayClub = model.AwayClub,
                 HomeGoals = model.HomeGoals,
-                AwayGoals = model.AwayGoals,
+                AwayClubGoals = model.AwayClubGoals,
                 MatchDay = model.MatchDay,
                 Stadium = model.Stadium,
                 MatchTime = model.MatchTime,
 
             };
-
         }
 
 
@@ -59,7 +58,7 @@ namespace LigaNOS.Helpers
             return new ClubViewModel
             {
                 Id = club.Id,
-                ImageFile = ConvertToIFormFile(club.ImageFile),
+                ImageFile = ConvertToIFormFile(club.ImageFileId),
                 Name = club.Name,
                 Coach = club.Coach,
                 Stadium = club.Stadium,
@@ -67,8 +66,8 @@ namespace LigaNOS.Helpers
         }
 
         private IFormFile ConvertToIFormFile(Guid imageFile)
-        {//conversion Iform to Guid
-                var stream = new MemoryStream(); // Replace with actual file stream
+        {
+                var stream = new MemoryStream(); 
                 return new FormFile(stream, 0, stream.Length, null, imageFile.ToString());
 
         }
@@ -78,7 +77,7 @@ namespace LigaNOS.Helpers
              return new PlayerViewModel
              {
                  Id = player.Id,
-                 ImageFile = ConvertToIFormFile(player.ImageFile),
+                 ImageFile = ConvertToIFormFile(player.ImageFileId),
                  Name = player.Name,
                  DateOfBirth = player.DateOfBirth,
                  Position = player.Position,
@@ -88,21 +87,20 @@ namespace LigaNOS.Helpers
 
         public MatchViewModel ToMatchViewModel(Match match)
         {
+            if (match == null) throw new ArgumentNullException(nameof(match));
             return new MatchViewModel
             {
+
                 Id = match.Id,
-                HomeClub = match.HomeClub.Name,
-                AwayClub = match.AwayClub.Name,
+                HomeClub = match.HomeClub?.Name,
+                AwayClub = match.AwayClub?.Name,
                 HomeGoals = match.HomeGoals,
-                AwayGoals = match.AwayGoals,
+                AwayClubGoals = match.AwayGoals,
                 MatchDay = match.MatchDay,
                 Stadium = match.Stadium,
                 MatchTime = match.MatchTime,
                     
             };
-   
-        }
-
-        
+        }   
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LigaNOS.Data.Entities
 {
@@ -20,8 +21,15 @@ namespace LigaNOS.Data.Entities
         public string Stadium { get; set; }
 
         public string MatchTime { get; set; }
-        
+
+        [ForeignKey("HomeClubId")]
+        public int HomeClubId { get; set; }
+        [ForeignKey("AwayClubId")]
+        public int AwayClubId { get; set; }  
+
         public User User { get; set; }
+
+ 
 
     }
 }

@@ -16,7 +16,7 @@ namespace LigaNOS.Controllers.API
         [HttpGet]
         public IActionResult GetPlayers()
         {
-            return Ok(_playerRepository.GetAll());
+            return Ok(_playerRepository.GetAllWithClubs());
         }
     }
 }

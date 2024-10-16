@@ -9,6 +9,7 @@ using LigaNOS.Data.Entities;
 using LigaNOS.Data;
 using System;
 using System.Collections.Generic;
+ 
 
 namespace LigaNOS.Controllers
 {
@@ -20,7 +21,6 @@ namespace LigaNOS.Controllers
         private readonly IUserHelper _userHelper;
         private readonly IConverterHelper _converterHelper;
         private readonly DataContext _context;
-
         public StatsController(IStatRepository statRepository, IMatchRepository matchRepository, IClubRepository clubRepository, IUserHelper userHelper, IConverterHelper converterHelper, IBlobHelper blobHelper, DataContext dataContext)
         {
             _statRepository = statRepository;
@@ -30,51 +30,44 @@ namespace LigaNOS.Controllers
             _converterHelper = converterHelper;
             _context = dataContext;
         }
-
         // GET: StatsController
         public ActionResult Index()
         {
             if (_matchRepository == null)
+            {
+                throw new InvalidOperationException("_matchRepository is not initialized.");
+            }
+            var matches = _matchRepository.GetAllWithUsers()
+                .OfType<Match>()
+                .Include(m => m.HomeClub)
+                .Include(m => m.AwayClub)
+                .Select(m => new MatchViewModel
                 {
-                    throw new InvalidOperationException("_matchRepository is not initialized.");
-                }
-
-                var matches = _matchRepository.GetAllWithUsers()
-                    .OfType<Match>()
-                    .Include(m => m.HomeClub)
-                    .Include(m => m.AwayClub)
-                    .Select(m => new MatchViewModel
-                    {
-                        HomeClub = m.HomeClub.Name,
-                        AwayClub = m.AwayClub.Name,
-                        HomeGoals = m.HomeGoals,
-                        AwayGoals = m.AwayGoals,
-                        MatchDate = m.MatchDay,
-                        MatchTime = m.MatchTime,
-                        Stadium = m.Stadium
-                    })
-                    .ToList();
+                    HomeClub = m.HomeClub.Name,
+                    AwayClub = m.AwayClub.Name,
+                    HomeGoals = m.HomeGoals,
+                    AwayGoals = m.AwayGoals,
+                    MatchDate = m.MatchDay,
+                    MatchTime = m.MatchTime,
+                    Stadium = m.Stadium
+                })
+                .ToList();
             var clubs = _clubRepository.GetAllWithUsers().OfType<Club>().ToList();
             var clubStats = new List<ClubStatViewModel>();
-
             if (clubStats == null)
             {
                 throw new InvalidOperationException("No club stats found.");
             }
-
             foreach (var club in clubs)
             {
                 var matchesForClub = _context.Matches
                     .Where(m => m.HomeClub.Id == club.Id || m.AwayClub.Id == club.Id)
                     .ToList();
-
                 var points = matchesForClub.Sum(m => m.HomeClub.Id == club.Id
                     ? (m.HomeGoals > m.AwayGoals ? 3 : m.HomeGoals == m.AwayGoals ? 1 : 0)
                     : (m.AwayGoals > m.HomeGoals ? 3 : m.AwayGoals == m.HomeGoals ? 1 : 0));
-
                 var goalsScored = matchesForClub.Sum(m => m.HomeClub.Id == club.Id ? m.HomeGoals : m.AwayGoals);
                 var goalsConceded = matchesForClub.Sum(m => m.HomeClub.Id == club.Id ? m.AwayGoals : m.HomeGoals);
-
                 clubStats.Add(new ClubStatViewModel
                 {
                     ClubName = club.Name,
@@ -83,23 +76,17 @@ namespace LigaNOS.Controllers
                     GoalsConceded = goalsConceded
                 });
             }
-
             var model = new StatViewModel
             {
                 MatchResults = matches,
                 ClubStats = clubStats
             };
-
             return View(model);
- 
+
         }
 
-
-
-  
-      
-        // GET: StatsController/Details/5
-        public ActionResult Details(int id)
+    // GET: StatsController/Details/5
+    public ActionResult Details(int id)
         {
             return View();
         }

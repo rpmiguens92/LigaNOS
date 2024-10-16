@@ -14,7 +14,7 @@ namespace LigaNOS.Data.Entities
 
         [Display(Name = "Photo")]
         [Required]
-        public Guid ImageFile { get; set; }
+        public Guid ImageFileId { get; set; }
 
         [Required]
         [MaxLength(100)]
@@ -33,13 +33,16 @@ namespace LigaNOS.Data.Entities
 
       
         [Display(Name = "Club")]
-        [Required]
+     
         public int ClubId { get; set; }
 
 
         [ForeignKey("ClubId")]
-        [Required]
+    
         public Club Clubs { get; set; }
         public User User { get; set; }
+        public string ImageFullPath => ImageFileId == Guid.Empty
+           ? $"https://liganos.azurewebsites.net/images/noimage.jpg"
+          : $"https://liganos.blob.core.windows.net/players/{ImageFileId}";
     }
 }

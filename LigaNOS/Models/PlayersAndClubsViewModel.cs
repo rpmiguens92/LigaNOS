@@ -1,5 +1,7 @@
 ﻿using LigaNOS.Data.Entities;
 using System.Collections.Generic;
+using System.Linq;
+
 
 namespace LigaNOS.Models
 {

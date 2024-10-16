@@ -1,4 +1,4 @@
-﻿@model PlayersAndClubsViewModel
+﻿@model LigaNOS.Models.PlayersAndClubsViewModel
 
 <h3>Players</h3>
 
@@ -21,7 +21,7 @@ else
                 <th>@Html.DisplayNameFor(model => model.Players.First().Name)</th>
                 <th>@Html.DisplayNameFor(model => model.Players.First().Position)</th>
                 <th>@Html.DisplayNameFor(model => model.Players.First().DateOfBirth)</th>
-                <th>@Html.DisplayNameFor(model => model.Players.First().ImageFile)</th>
+                <th>@Html.DisplayNameFor(model => model.Players.First().ImageFileId)</th>
                 <th>@Html.DisplayNameFor(model => model.Players.First().Clubs.Name)</th>
                 <th></th>
             </tr>
@@ -35,17 +35,9 @@ else
                     <td>@Html.DisplayFor(modelItem => item.Position)</td>
                     <td>@Html.DisplayFor(modelItem => item.DateOfBirth)</td>
                     <td>
-                        @if (item.ImageFile != Guid.Empty)
-
-                        {
-                            <img src="@Url.Action("GetPlayerImage", "Players", new { id = item.ImageFile })" alt="Player Image" style="width:100px; height:auto;" />
-                        }
-
-                        else
-
-                        {
-                            <p>No Image</p>
-                        }
+                    <td>
+                        <img src="@item.ImageFullPath" alt="@item.Name "Photo" style="width: 100px; height: auto;" />
+                    </td>
                     </td>
                     <td>@Html.DisplayFor(modelItem => item.Clubs.Name)</td>
                     <td>

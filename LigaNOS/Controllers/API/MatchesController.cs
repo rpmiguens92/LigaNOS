@@ -17,7 +17,7 @@ namespace LigaNOS.Controllers.API
         [HttpGet]
         public IActionResult GetMatches()
         {
-            return Ok(_matchRepository.GetAll());
+            return Ok(_matchRepository.GetAllWithUsers());
         }
 
     }

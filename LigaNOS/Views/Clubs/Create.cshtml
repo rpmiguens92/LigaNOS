@@ -1,4 +1,4 @@
-﻿@model LigaNOS.Data.Entities.Club
+﻿@model LigaNOS.Models.ClubViewModel
 @{
     ViewData["Title"] = "Create";
 }
@@ -23,6 +23,11 @@
                 <label asp-for="Coach" class="control-label"></label>
                 <input asp-for="Coach" class="form-control" />
                 <span asp-validation-for="Coach" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Stadium" class="control-label"></label>
+                <input asp-for="Stadium" class="form-control" />
+                <span asp-validation-for="Stadium" class="text-danger"></span>
             </div>
             <div class="form-group">
               

@@ -15,7 +15,7 @@ namespace LigaNOS.Data.Repositories
             {
                 _context = context;
             }
-            public IQueryable<T> GetAll()
+            public IQueryable<T> GetAllWithClubs()
             {
                 return _context.Set<T>().AsNoTracking();
             }

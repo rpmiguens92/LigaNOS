@@ -1,6 +1,7 @@
 using System;
+ 
 
-namespace LigaNOS.Models
+namespace LigaNOS.Data.Models
 {
     public class ErrorViewModel
     {

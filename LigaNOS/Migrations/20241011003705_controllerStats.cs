@@ -27,25 +27,29 @@ namespace LigaNOS.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onUpdate: ReferentialAction.NoAction,
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_Stats_Clubs_AwayClubId",
                         column: x => x.AwayClubId,
                         principalTable: "Clubs",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onUpdate: ReferentialAction.NoAction,
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_Stats_Clubs_HomeClubId",
                         column: x => x.HomeClubId,
                         principalTable: "Clubs",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onUpdate: ReferentialAction.NoAction,
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_Stats_Matches_MatchId",
                         column: x => x.MatchId,
                         principalTable: "Matches",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onUpdate: ReferentialAction.NoAction,
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateIndex(

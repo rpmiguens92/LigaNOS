@@ -4,14 +4,16 @@ using LigaNOS.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace LigaNOS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241011160000_updateClubsClass")]
+    partial class updateClubsClass
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,7 +36,7 @@ namespace LigaNOS.Migrations
                     b.Property<int>("Draws")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("ImageFileId")
+                    b.Property<Guid>("ImageFile")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Losses")
@@ -127,7 +129,7 @@ namespace LigaNOS.Migrations
                         .IsRequired()
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("ImageFileId")
+                    b.Property<Guid>("ImageFile")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")

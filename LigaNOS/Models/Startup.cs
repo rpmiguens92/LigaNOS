@@ -2,6 +2,7 @@ using LigaNOS.Data;
 using LigaNOS.Data.Entities;
 using LigaNOS.Data.Repositories;
 using LigaNOS.Helpers;
+ 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -50,7 +51,9 @@ namespace LigaNOS
             services.AddScoped<IPlayerRepository, PlayerRepository>();
             services.AddScoped<IClubRepository, ClubRepository>();
             services.AddScoped<IMatchRepository, MatchRepository>();
+            
             services.AddScoped<IStatRepository, StatRepository>();
+
 
 
 

@@ -30,7 +30,7 @@ namespace LigaNOS.Controllers
         // GET: ClubsController
         public IActionResult Index()
         {
-            return View(_clubRepository.GetAll().OrderBy(c => c.Name));
+            return View(_clubRepository.GetAllWithClubs().OrderBy(c => c.Name));
         }
 
         // GET: ClubsController/Details/5
@@ -73,6 +73,10 @@ namespace LigaNOS.Controllers
 
                 }
                 var club = _converterHelper.ToClub(model, imageId, true);
+
+                club.User = await _userHelper.GetUserByEmailAsync("miguens.rp@gmail.com");
+                await _clubRepository.UpdateAsync(club);
+
                 await _clubRepository.CreateAsync(club);
                 return RedirectToAction(nameof(Index));
             }
@@ -82,6 +86,11 @@ namespace LigaNOS.Controllers
         // GET: ClubsController/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
             var club = await _clubRepository.GetByIdAsync(id.Value);
             if (club == null)
             {
@@ -89,6 +98,7 @@ namespace LigaNOS.Controllers
             }
             var model = _converterHelper.ToClubViewModel(club);
             return View(model);
+
         }
 
         // POST: ClubsController/Edit/5
@@ -96,8 +106,6 @@ namespace LigaNOS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(ClubViewModel model)
         {
- 
-
             if (ModelState.IsValid)
             {
                 try
@@ -108,12 +116,11 @@ namespace LigaNOS.Controllers
                     {
 
                         imageId = await _blobHelper.UploadBlobAsync(model.ImageFile, "clubs");
-
-
                     }
                     var club = _converterHelper.ToClub(model, imageId, false);
 
                     club.User = await _userHelper.GetUserByEmailAsync("miguens.rp@gmail.com");
+                    
                     await _clubRepository.UpdateAsync(club);
                 }
                 catch (DbUpdateConcurrencyException)
