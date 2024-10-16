@@ -74,7 +74,7 @@ namespace LigaNOS.Controllers
                 }
                 var club = _converterHelper.ToClub(model, imageId, true);
 
-                club.User = await _userHelper.GetUserByEmailAsync("miguens.rp@gmail.com");
+                club.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
                 await _clubRepository.UpdateAsync(club);
 
                 await _clubRepository.CreateAsync(club);
@@ -119,9 +119,7 @@ namespace LigaNOS.Controllers
                     }
                     var club = _converterHelper.ToClub(model, imageId, false);
 
-                    club.User = await _userHelper.GetUserByEmailAsync("miguens.rp@gmail.com");
-                    
-                    await _clubRepository.UpdateAsync(club);
+                    club.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
                 }
                 catch (DbUpdateConcurrencyException)
                 {

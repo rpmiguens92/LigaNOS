@@ -80,23 +80,6 @@ namespace LigaNOS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(MatchViewModel model)
         {
-            //if (ModelState.IsValid)
-            //{
-
-            //    Guid imageId = Guid.Empty;
-
-            //    if (model.ImageFile != null && model.ImageFile.Length > 0)
-            //    {
-            //        imageId = await _blobHelper.UploadBlobAsync(model.ImageFile, "matches");
-            //    }
-
-            //    var match = _converterHelper.ToMatch(model, imageId, true);
-
-            //    match.User = await _userHelper.GetUserByEmailAsync("miguens.rp@gmail.com");
-            //    await _matchRepository.CreateAsync(match);
-            //    return RedirectToAction(nameof(Index));
-            //}
-            //return View(model);
 
             if (ModelState.IsValid)
             {
@@ -115,7 +98,7 @@ namespace LigaNOS.Controllers
                     MatchDay = model.MatchDay,
                     MatchTime = model.MatchTime
                 };
-
+                match.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
                 await _matchRepository.CreateAsync(match);
 
 
@@ -162,7 +145,7 @@ namespace LigaNOS.Controllers
                     }
                     var match = _converterHelper.ToMatch(model, imageId, false);
 
-                    match.User = await _userHelper.GetUserByEmailAsync("miguens.rp@gmail.com");
+                    match.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
                     await _matchRepository.UpdateAsync(match);
                 }
                 catch (DbUpdateConcurrencyException)
