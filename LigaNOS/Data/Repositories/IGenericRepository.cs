@@ -6,9 +6,9 @@ namespace LigaNOS.Data.Repositories
     public interface IGenericRepository<T> where T : class
     {
 
-            IQueryable<T> GetAllWithClubs();
-
-            Task<T> GetByIdAsync(int id);
+            IQueryable<T> GetAll();
+            
+        Task<T> GetByIdAsync(int id);
 
             Task CreateAsync(T entity);
 

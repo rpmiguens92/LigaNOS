@@ -6,16 +6,9 @@
 
 <h1>Details</h1>
 
-<div>
-    <h4>Customer</h4>
     <hr />
     <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ImageFileId)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ImageFileId)
-        </dd>
+    
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Name)
         </dt>
@@ -34,7 +27,11 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.DateOfBirth)
         </dd>
+        </dl>
+    <div class="col-md-4">
+        <img src="@Url.Content(Model.ImageFullPath)" alt="Image" style="width:300px;height:450px;max-width:100%;height:auto" />
+    </div>
         <div>
-            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+           
             <a asp-action="Index" class="btn btn-success">Back to List</a>
         </div>

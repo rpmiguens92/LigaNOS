@@ -19,24 +19,28 @@ namespace LigaNOS.Controllers
         private readonly IBlobHelper _blobHelper;
         private readonly IConverterHelper _converterHelper;
         private readonly IClubRepository _clubRepository;
+        private readonly ITeamService _teamService;
+        private readonly IMatchGenerator _matchGenerator;
 
-        public MatchesController(IMatchRepository matchRepository, IUserHelper userHelper, IBlobHelper blobHelper, IConverterHelper converterHelper, IClubRepository clubRepository)
+        public MatchesController(IMatchRepository matchRepository, IUserHelper userHelper, IBlobHelper blobHelper, IConverterHelper converterHelper, IClubRepository clubRepository, ITeamService teamService, IMatchGenerator matchGenerator)
         {
             _matchRepository = matchRepository;
+            _matchGenerator = matchGenerator;
             _userHelper = userHelper;
             _blobHelper = blobHelper;
             _converterHelper = converterHelper;
             _clubRepository = clubRepository;
+            _teamService = teamService;
         }
 
         // GET: MatchesController
         public async Task<IActionResult> Index()
             {
-            var matches = await _matchRepository.GetAllWithClubs()
+            var matches = await _matchRepository.GetAll()
             .Include(m => m.HomeClub)
             .Include(m => m.AwayClub)
-         
             .ToListAsync();
+
             return View(matches);
              }
 
@@ -59,19 +63,16 @@ namespace LigaNOS.Controllers
         }
 
         // GET: MatchesController/Create
-        public IActionResult Create()
+        public async Task<IActionResult> CreateAsync()
         {
-             
-            var matchGenerator = new MatchGenerator(_clubRepository);
-            var match = matchGenerator.GenerateMatch();
-
-            var matchViewModel = new MatchViewModel
+            var teams = await _teamService.GetTeamsAsync();
+            if (teams.Count % 2 != 0)
             {
-                HomeClub = match.HomeClub,
-                AwayClub = match.AwayClub,
-                Stadium = match.Stadium,
-            };
+                ModelState.AddModelError(string.Empty, "The total number of teams must be even.");
+                return View("Error"); // Or return to a specific view with an error message
+            }
 
+            var matchViewModel = await _matchGenerator.GenerateMatchAsync();
             return View(matchViewModel);
         }
 
@@ -95,6 +96,7 @@ namespace LigaNOS.Controllers
                 {
                     HomeClub = homeClub,
                     AwayClub = awayClub,
+                    Stadium = model.Stadium,
                     MatchDay = model.MatchDay,
                     MatchTime = model.MatchTime
                 };

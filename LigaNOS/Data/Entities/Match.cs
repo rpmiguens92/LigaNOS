@@ -23,9 +23,9 @@ namespace LigaNOS.Data.Entities
         public string MatchTime { get; set; }
 
         [ForeignKey("HomeClubId")]
-        public int HomeClubId { get; set; }
+        public int? HomeClubId { get; set; }
         [ForeignKey("AwayClubId")]
-        public int AwayClubId { get; set; }  
+        public int? AwayClubId { get; set; }  
 
         public User User { get; set; }
 

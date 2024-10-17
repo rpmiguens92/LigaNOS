@@ -1,5 +1,8 @@
 ﻿using LigaNOS.Data.Entities;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 
@@ -14,7 +17,23 @@ namespace LigaNOS.Data.Repositories
         }
         public IQueryable GetAllWithUsers()
         {
-            return _context.Clubs.Include(c => c.User);
+            return _context.Players.Include(p => p.Clubs);
+        }
+        public IEnumerable<SelectListItem> GetComboPlayers()
+        {
+            var list = _context.Players.Select(p => new SelectListItem
+            {
+                Text = p.Name,
+                Value = $"{p.Id}"
+            }).ToList();
+           
+            list.Insert(0, new SelectListItem
+            {
+                Text = "(Select a player...)",
+                Value = "0"
+            });
+
+            return list;
         }
     }
 }

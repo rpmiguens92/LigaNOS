@@ -9,5 +9,6 @@ namespace LigaNOS.Data.Repositories
     public interface IPlayerRepository : IGenericRepository<Player>
     {
         public IQueryable GetAllWithUsers();
+        
     }
 }

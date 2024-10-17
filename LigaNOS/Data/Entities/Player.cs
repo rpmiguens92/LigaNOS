@@ -34,7 +34,7 @@ namespace LigaNOS.Data.Entities
       
         [Display(Name = "Club")]
      
-        public int ClubId { get; set; }
+        public int? ClubId { get; set; }
 
 
         [ForeignKey("ClubId")]

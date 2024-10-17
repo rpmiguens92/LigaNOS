@@ -4,14 +4,16 @@ using LigaNOS.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace LigaNOS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241016135117_matchGeneratorFix")]
+    partial class matchGeneratorFix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -73,13 +75,13 @@ namespace LigaNOS.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("AwayClubId")
+                    b.Property<int>("AwayClubId")
                         .HasColumnType("int");
 
                     b.Property<int>("AwayGoals")
                         .HasColumnType("int");
 
-                    b.Property<int?>("HomeClubId")
+                    b.Property<int>("HomeClubId")
                         .HasColumnType("int");
 
                     b.Property<int>("HomeGoals")
@@ -120,7 +122,7 @@ namespace LigaNOS.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("ClubId")
+                    b.Property<int>("ClubId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("DateOfBirth")
@@ -410,12 +412,14 @@ namespace LigaNOS.Migrations
                     b.HasOne("LigaNOS.Data.Entities.Club", "AwayClub")
                         .WithMany("AwayMatches")
                         .HasForeignKey("AwayClubId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("LigaNOS.Data.Entities.Club", "HomeClub")
                         .WithMany("HomeMatches")
                         .HasForeignKey("HomeClubId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("LigaNOS.Data.Entities.Stat", null)
                         .WithMany("Matches")
@@ -436,7 +440,9 @@ namespace LigaNOS.Migrations
                 {
                     b.HasOne("LigaNOS.Data.Entities.Club", "Clubs")
                         .WithMany("Players")
-                        .HasForeignKey("ClubId");
+                        .HasForeignKey("ClubId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("LigaNOS.Data.Entities.User", "User")
                         .WithMany()

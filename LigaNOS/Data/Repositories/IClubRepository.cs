@@ -7,5 +7,6 @@ namespace LigaNOS.Data.Repositories
     public interface IClubRepository : IGenericRepository<Club>
     {
         public IQueryable GetAllWithUsers();
+        Task<bool> HasMatchesAsync(int clubId);
     }
 }

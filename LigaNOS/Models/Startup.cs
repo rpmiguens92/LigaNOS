@@ -53,8 +53,8 @@ namespace LigaNOS
             services.AddScoped<IMatchRepository, MatchRepository>();
             
             services.AddScoped<IStatRepository, StatRepository>();
-
-
+            services.AddScoped<ITeamService, TeamService>();
+            services.AddScoped<IMatchGenerator, MatchGenerator>();
 
 
             services.AddControllersWithViews();

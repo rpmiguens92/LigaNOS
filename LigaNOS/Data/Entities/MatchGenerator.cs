@@ -3,48 +3,55 @@ using LigaNOS.Models;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace LigaNOS.Data.Entities
 {
-    public class MatchGenerator
+    public class MatchGenerator : IMatchGenerator
     {
 
         private readonly IClubRepository _clubRepository;
+        private readonly IMatchRepository _matchRepository;
+    
         private List<Match> Matches { get; set; }
         private int contJourneys;
 
-        public MatchGenerator(IClubRepository clubRepository)
+        public MatchGenerator(IClubRepository clubRepository, IMatchRepository matchRepository)
         {
             _clubRepository = clubRepository;
+            _matchRepository = matchRepository;
             Matches = new List<Match>(); // Assume you have this stored elsewhere in reality
             contJourneys = 0;
         }
 
-        public MatchViewModel GenerateMatch()
+        public async Task<MatchViewModel> GenerateMatchAsync()
         {
-            // Fetch all clubs
-            var clubs = _clubRepository.GetAllWithClubs().ToList();
+           
+            var clubs = _clubRepository.GetAll().ToList();
+            if (clubs.Any(c => c.Id == 0))
+            {
+                throw new InvalidOperationException("Um ou mais clubes não têm um ID válido.");
+            }
 
-            // Club parity check
             if (clubs.Count % 2 != 0)
             {
                 throw new InvalidOperationException("O Número total de equipas tem de ser par!");
             }
 
-            // Season completion check
+            
             if (Matches.Count == clubs.Count * (clubs.Count - 1))
             {
                 throw new InvalidOperationException("Época completa!");
             }
 
-            // Limit games per journey
+            
             int gamesPerJourney = clubs.Count / 2;
             if (Matches.Count % gamesPerJourney == 0)
             {
                 contJourneys++;
             }
 
-            // Track clubs that have already played in the current journey
+             
             HashSet<Club> clubsPlayedThisJourney = new HashSet<Club>();
             int currentJourney = Matches.Count - (Matches.Count % gamesPerJourney);
             for (int i = currentJourney; i < Matches.Count; i++)
@@ -56,7 +63,7 @@ namespace LigaNOS.Data.Entities
             Club randomHomeGame;
             Club randomAwayGame;
 
-            // Handle home/away alternation after the first round
+            
             var totalGamesFirstRound = (clubs.Count * (clubs.Count - 1) / 2);
             if (Matches.Count >= totalGamesFirstRound)
             {
@@ -71,26 +78,26 @@ namespace LigaNOS.Data.Entities
                 {
                     validMatch = true;
 
-                    // Randomly select home and away clubs
+                     
                     var randClubID = new Random();
                     randomHomeGame = clubs[randClubID.Next(clubs.Count)];
                     randomAwayGame = clubs[randClubID.Next(clubs.Count)];
 
-                    // Ensure the clubs are different
+                    
                     if (randomHomeGame == randomAwayGame)
                     {
                         validMatch = false;
                     }
                     else
                     {
-                        // Check if the club has already played in the current journey
+                         
                         if (clubsPlayedThisJourney.Contains(randomHomeGame) || clubsPlayedThisJourney.Contains(randomAwayGame))
                         {
                             validMatch = false;
                         }
                         else
                         {
-                            // Check if this match pairing already exists in the season
+                            
                             foreach (var match in Matches)
                             {
                                 if (match.HomeClub == randomHomeGame && match.AwayClub == randomAwayGame)
@@ -103,26 +110,32 @@ namespace LigaNOS.Data.Entities
                     }
                 } while (!validMatch);
 
-                // Add clubs to the list of those who played this journey
+                 
                 clubsPlayedThisJourney.Add(randomHomeGame);
                 clubsPlayedThisJourney.Add(randomAwayGame);
             }
 
-            // Create the match
+             
             var newMatch = new MatchViewModel
             {
                 HomeClub = randomHomeGame.Name,
-                AwayClub = randomAwayGame.Name
+                AwayClub = randomAwayGame.Name,
+                Stadium = randomHomeGame.Stadium,
+              
             };
 
-            // Add the match to the list of matches
-            Matches.Add(new Match
+            
+            var randomMatch = new Match
             {
                 HomeClub = randomHomeGame,
                 AwayClub = randomAwayGame,
-                MatchDay = DateTime.Now.AddDays(contJourneys), // Example match day
-              
-            });
+                Stadium = newMatch.Stadium,
+                
+            };
+
+            await _matchRepository.CreateAsync(randomMatch);
+
+            Matches.Add(randomMatch);
 
             return newMatch;
         }

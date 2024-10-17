@@ -26,13 +26,13 @@ namespace LigaNOS.Data
                 .HasOne(m => m.HomeClub)
                 .WithMany(c => c.HomeMatches)
                 .HasForeignKey(m => m.HomeClubId)
-                .OnDelete(DeleteBehavior.Restrict); 
+                .OnDelete(DeleteBehavior.NoAction); 
  
             modelBuilder.Entity<Match>()
                 .HasOne(m => m.AwayClub)
                 .WithMany(c => c.AwayMatches)
                 .HasForeignKey(m => m.AwayClubId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Stat>()
                 .HasOne(s => s.HomeClub)

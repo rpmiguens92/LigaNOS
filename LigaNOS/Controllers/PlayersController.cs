@@ -9,7 +9,7 @@ using LigaNOS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
- 
+
 
 
 namespace LigaNOS.Controllers
@@ -23,31 +23,28 @@ namespace LigaNOS.Controllers
         private readonly IBlobHelper _blobHelper;
         private readonly IUserHelper _userHelper;
         private readonly DataContext _context;
-        public PlayersController(IPlayerRepository playerRepository, IClubRepository clubRepository, IUserHelper userHelper, IConverterHelper converterHelper, DataContext context)
+        public PlayersController(IPlayerRepository playerRepository, IClubRepository clubRepository, IUserHelper userHelper, IConverterHelper converterHelper, IBlobHelper blobHelper)
         {
             _playerRepository = playerRepository;
             _clubRepository = clubRepository;
             _userHelper = userHelper;
             _converterHelper = converterHelper;
-            _context = context;
+            _blobHelper = blobHelper;
+             
         }
         // GET: PlayersController
         public IActionResult Index()
         {
-            var players = _playerRepository.GetAllWithClubs().Include(p => p.Clubs).OrderBy(p => p.Name).ToList();
-            var clubs = _clubRepository.GetAllWithClubs().OrderBy(c => c.Name).ToList();
 
-            var viewModel = new PlayersAndClubsViewModel
-            {
-                Players = players,
-                Clubs = clubs
-            };
 
-            return View(viewModel);
+            var players = _playerRepository.GetAll().Include(p => p.Clubs).OrderBy(p => p.Name).ToList();
+ 
+
+            return View(players);
         }
-        // GET: PlayersController/Details/5
-        public async Task<IActionResult>Details(int? id)
-        {
+            // GET: PlayersController/Details/5
+            public async Task<IActionResult> Details(int? id)
+            {
             if (id == null)
             {
                 return NotFound();
@@ -55,17 +52,17 @@ namespace LigaNOS.Controllers
 
             var player = await _playerRepository.GetByIdAsync(id.Value);
             if (player == null)
-            { 
-                return NotFound(); 
+            {
+                return NotFound();
             }
 
             return View(player);
-        }
+            }
 
         // GET: PlayersController/Create
         public IActionResult Create()
         {
-            ViewBag.Clubs = new SelectList(_clubRepository.GetAllWithClubs(),"Id", "Name");
+            ViewBag.Clubs = new SelectList(_clubRepository.GetAll(), "Id", "Name");
             return View();
         }
 
@@ -84,15 +81,19 @@ namespace LigaNOS.Controllers
                 }
                 var player = _converterHelper.ToPlayer(model, imageId, true);
 
-                player.User = await _userHelper.GetUserByEmailAsync(User.Identity.Name);
-                await _playerRepository.UpdateAsync(player);
+                if (!User.Identity.IsAuthenticated)
+                {
+                    return RedirectToAction("Login", "Account");
+                }
 
+                player.User = await _userHelper.GetUserByEmailAsync(User.Identity.Name);
+           
                 await _playerRepository.CreateAsync(player);
 
                 return RedirectToAction(nameof(Index));
             }
-            ViewBag.Clubs = new SelectList(_clubRepository.GetAllWithClubs(),"Id", "Name", model.ClubId);
-           
+            ViewBag.Clubs = new SelectList(_clubRepository.GetAll(), "Id", "Name", model.ClubId);
+
             return View(model);
         }
 
@@ -106,6 +107,9 @@ namespace LigaNOS.Controllers
                 return NotFound();
             }
             var model = _converterHelper.ToPlayerViewModel(player);
+
+            ViewBag.Clubs = new SelectList(_clubRepository.GetAll(), "Id", "Name", model.ClubId);
+
             return View(model);
         }
 
@@ -113,25 +117,38 @@ namespace LigaNOS.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(PlayerViewModel model)
-        { 
+        {
             if (ModelState.IsValid)
             {
+                if (!User.Identity.IsAuthenticated)
+                {
+                    return RedirectToAction("Login", "Account");
+                }
                 try
                 {
-                    Guid imageId = Guid.Empty;
+                    var player = await _playerRepository.GetByIdAsync(model.Id);
+                    if (player == null) 
+                    { 
+                        return NotFound(); 
+                    }
+
+                    // Inicializa o imageId com o valor existente
+                    Guid imageId = model.ImageFileId;
 
                     if (model.ImageFile != null && model.ImageFile.Length > 0)
                     {
 
-                        imageId = await _blobHelper.UploadBlobAsync(model.ImageFile, "players");
-
+                        player.ImageFileId = await _blobHelper.UploadBlobAsync(model.ImageFile, "players");
+                       
                     }
-                    var player = _converterHelper.ToPlayer(model, imageId, false);
-                    
-                    
-                    
+
+
+                    player.Name = model.Name;
+                    player.DateOfBirth = model.DateOfBirth;
+                    player.Position = model.Position;
+                    player.ClubId = model.ClubId; 
                     player.User = await _userHelper.GetUserByEmailAsync(User.Identity.Name);
-                    
+
                     await _playerRepository.UpdateAsync(player);
                 }
                 catch (DbUpdateConcurrencyException)
@@ -147,8 +164,8 @@ namespace LigaNOS.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewBag.Clubs = new SelectList(_clubRepository.GetAllWithClubs(), "Id", "Name", model.ClubId);
-    return View(model);
+            ViewBag.Clubs = new SelectList(_clubRepository.GetAll(), "Id", "Name", model.ClubId);
+            return View(model);
         }
 
         // GET: PlayersController/Delete/5
@@ -159,18 +176,18 @@ namespace LigaNOS.Controllers
                 return NotFound();
             }
             var player = await _playerRepository.GetByIdAsync(id.Value);
-            if (player == null) 
-            { 
-                return NotFound(); 
+            if (player == null)
+            {
+                return NotFound();
             }
 
             return View(player);
         }
 
         // POST: PlayersController/Delete/5
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-         public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var player = await _playerRepository.GetByIdAsync(id);
             if (player == null)
