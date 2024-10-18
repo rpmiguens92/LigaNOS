@@ -1,6 +1,7 @@
 ﻿using LigaNOS.Data.Entities;
 using LigaNOS.Helpers;
 using LigaNOS.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -53,7 +54,7 @@ namespace LigaNOS.Controllers
             return RedirectToAction("Index", "Home");
 
         }
-
+        [Authorize(Roles = "Admin")]
         public IActionResult Register()
         {
             return View();
@@ -96,6 +97,8 @@ namespace LigaNOS.Controllers
             }
             return View(model);
         }
+
+        [Authorize(Roles = "Admin, Club, Empl, Anony")]
         public async Task<IActionResult> ChangeUser()
         {
             var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
@@ -107,6 +110,8 @@ namespace LigaNOS.Controllers
             }
             return View(model);
         }
+
+
         [HttpPost]
         public async Task<IActionResult> ChangeUser(ChangeUserViewModel model)
         {
@@ -133,6 +138,8 @@ namespace LigaNOS.Controllers
 
             return View(model);
         }
+
+       [Authorize(Roles = "Admin, Club, Empl, Anony")]
         public IActionResult ChangePassword()
         {
             return View();
@@ -163,7 +170,6 @@ namespace LigaNOS.Controllers
 
                 }
             }
-
             return this.View(model);
         }
 

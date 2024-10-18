@@ -3,6 +3,7 @@ using LigaNOS.Data.Entities;
 using LigaNOS.Data.Repositories;
 using LigaNOS.Helpers;
 using LigaNOS.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace LigaNOS.Controllers
 {
+    [Authorize(Roles = "Admin, Emplo")]
     public class MatchesController : Controller
     {
         private readonly IMatchRepository _matchRepository;
@@ -67,6 +69,7 @@ namespace LigaNOS.Controllers
         }
 
         // GET: MatchesController/Create
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create()
         { 
             var match = await _matchGenerator.GenerateMatch();
@@ -128,6 +131,7 @@ namespace LigaNOS.Controllers
         }
 
         // GET: MatchesController/Edit/5
+        [Authorize(Roles = "Emplo")]
         public async Task<IActionResult> Edit(int? id)
         {  
             if (id == null)
@@ -223,6 +227,7 @@ namespace LigaNOS.Controllers
         }
 
         // GET: MatchesController/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)

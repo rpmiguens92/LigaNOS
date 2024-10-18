@@ -7,6 +7,7 @@ using System.Xml.Linq;
 using static System.Reflection.Metadata.BlobBuilder;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using LigaNOS.Controllers;
+using Microsoft.AspNetCore.Hosting.Server;
 
 namespace LigaNOS.Data.Entities
 {
@@ -26,11 +27,18 @@ namespace LigaNOS.Data.Entities
         {
             await _context.Database.EnsureCreatedAsync();
 
-            var user = await _userHelper.GetUserByEmailAsync("miguens.rp@gmail.com");
+         
+            await _userHelper.CheckRoleAsync("Admin");
+            await _userHelper.CheckRoleAsync("Emplo");
+            await _userHelper.CheckRoleAsync("Club");
+            await _userHelper.CheckRoleAsync("Anony");
 
-            if (user == null)
+             
+            var userAdmin = await _userHelper.GetUserByEmailAsync("miguens.rp@gmail.com");
+
+            if (userAdmin == null)
             {
-                user = new User
+                userAdmin = new User
                 {
                     FirstName = "Rita",
                     LastName = "Miguens",
@@ -38,45 +46,129 @@ namespace LigaNOS.Data.Entities
                     UserName = "miguens.rp@gmail.com",
                 };
 
-                var result = await _userHelper.AddUserAsync(user, "123456");
+                var result = await _userHelper.AddUserAsync(userAdmin, "123456");
 
                 if (result != IdentityResult.Success)
                 {
-                    throw new InvalidOperationException("Could not create the user in seeder");
+                    throw new InvalidOperationException("Could not create the Admin user.");
                 }
             }
-            if (!_context.Clubs.Any())
-            {
-                AddClub("Sport Lisboa e Benfica", "Jorge Jesus", "Estádio do Benfica", user);
-                AddClub("Ericeirense", "Jorge Deus", "Estádio do Ericeira", user);
-                AddClub("FC Porto", "Sérgio Conceição", "Estádio do Dragão", user);
-                AddClub("Estrela da Amadora", "Bernardo Cruz", "Estádio da Amadora", user);
 
-                await _context.SaveChangesAsync();
+             
+            if (!await _userHelper.IsUserInRoleAsync(userAdmin, "Admin"))
+            {
+                await _userHelper.AddUserToRoleAsync(userAdmin, "Admin");
             }
 
-            var clubs = _context.Clubs.ToList();
-            if (clubs.Count < 2)  
-            {
-                throw new InvalidOperationException("Not enough clubs to create matches.");
-            }
+            
+            var userEmplo = await _userHelper.GetUserByEmailAsync("miguel@cinel.pt");
 
-            if (!_context.Players.Any())
+            if (userEmplo == null)
             {
-                foreach (var club in clubs)
+                userEmplo = new User
                 {
-                    AddPlayer(club, user);
+                    FirstName = "Miguel",
+                    LastName = "Miguens",
+                    Email = "miguel@cinel.pt",
+                    UserName = "miguel@cinel.pt"
+                };
+                var resultEmplo = await _userHelper.AddUserAsync(userEmplo, "123456");
+
+                if (resultEmplo != IdentityResult.Success)
+                {
+                    throw new InvalidOperationException("Could not create the Emplo user.");
                 }
-                await _context.SaveChangesAsync();
             }
 
-            if (!_context.Matches.Any())
+            
+            if (!await _userHelper.IsUserInRoleAsync(userEmplo, "Emplo"))
             {
-                AddMatch(user);
-                await _context.SaveChangesAsync();
+                await _userHelper.AddUserToRoleAsync(userEmplo, "Emplo");
+            }
+
+            
+            var userClub = await _userHelper.GetUserByEmailAsync("maria@cinel.pt");
+
+            if (userClub == null)
+            {
+                userClub = new User
+                {
+                    FirstName = "Maria",
+                    LastName = "Miguens",
+                    Email = "maria@cinel.pt",
+                    UserName = "maria@cinel.pt"
+                };
+                var resultClub = await _userHelper.AddUserAsync(userClub, "123456");
+
+                if (resultClub != IdentityResult.Success)
+                {
+                    throw new InvalidOperationException("Could not create the Club user.");
+                }
+            }
+
+          
+            if (!await _userHelper.IsUserInRoleAsync(userClub, "Club"))
+            {
+                await _userHelper.AddUserToRoleAsync(userClub, "Club");
+            }
+
+            
+            var userAnony = await _userHelper.GetUserByEmailAsync("francisco@cinel.pt");
+
+            if (userAnony == null)
+            {
+                userAnony = new User
+                {
+                    FirstName = "Francisco",
+                    LastName = "Miguens",
+                    Email = "francisco@cinel.pt",
+                    UserName = "francisco@cinel.pt"
+                };
+                var resultAnony = await _userHelper.AddUserAsync(userAnony, "123456");
+
+                if (resultAnony != IdentityResult.Success)
+                {
+                    throw new InvalidOperationException("Could not create the Anony user.");
+                }
+          
+             
+            if (!await _userHelper.IsUserInRoleAsync(userAnony, "Anony"))
+            {
+                await _userHelper.AddUserToRoleAsync(userAnony, "Anony");
+            }
+ 
+            if (!_context.Clubs.Any())
+                {
+                    AddClub("Sport Lisboa e Benfica", "Jorge Jesus", "Estádio do Benfica", userAdmin);
+                    AddClub("Ericeirense", "Jorge Deus", "Estádio do Ericeira", userAdmin);
+                    AddClub("FC Porto", "Sérgio Conceição", "Estádio do Dragão", userAdmin);
+                    AddClub("Estrela da Amadora", "Bernardo Cruz", "Estádio da Amadora", userAdmin);
+
+                    await _context.SaveChangesAsync();
+                }
+
+                var clubs = _context.Clubs.ToList();
+                if (clubs.Count < 2)
+                {
+                    throw new InvalidOperationException("Not enough clubs to create matches.");
+                }
+
+                if (!_context.Players.Any())
+                {
+                    foreach (var club in clubs)
+                    {
+                        AddPlayer(club, userAdmin);
+                    }
+                    await _context.SaveChangesAsync();
+                }
+
+                if (!_context.Matches.Any())
+                {
+                    AddMatch(userAdmin);
+                    await _context.SaveChangesAsync();
+                }
             }
         }
-
         private void AddClub(string name, string coach, string stadium,User user)
         {
                 _context.Clubs.Add(new Club
@@ -88,21 +180,21 @@ namespace LigaNOS.Data.Entities
                 });
         }
 
-        private void AddPlayer( Club clubs, User user)
+        private void AddPlayer( Club club, User user)
         {
             _context.Players.Add(new Player
             {
                 Name = GenerateRandomPlayerName(),
                 DateOfBirth = GenerateRandomDateOfBirth(),
                 Position = GenerateRandomPosition(),
-                ClubId = clubs.Id,
+                ClubId = club.Id,
                 User = user,
             });
           
         }
 
         private void AddMatch( User user)
-        { // Obter todos os clubes do banco de dados
+        {  
             var clubs = _context.Clubs.ToList();
 
             if (clubs.Count < 2)
@@ -110,14 +202,14 @@ namespace LigaNOS.Data.Entities
                 throw new InvalidOperationException("Not enough clubs to create a match.");
             }
 
-            // Seleciona dois clubes aleatórios, garantindo que sejam diferentes
+           //2 random clubs
             var homeClub = clubs[_random.Next(clubs.Count)];
             Club awayClub;
 
             do
             {
                 awayClub = clubs[_random.Next(clubs.Count)];
-            } while (awayClub.Id == homeClub.Id);  // Garante que os clubes não sejam os mesmos
+            } while (awayClub.Id == homeClub.Id);   
 
             _context.Matches.Add(new Match
             {
@@ -125,7 +217,7 @@ namespace LigaNOS.Data.Entities
                 MatchTime = GenerateRandomMatchTime(),
                 HomeClub = homeClub,
                 AwayClub = awayClub,
-                Stadium = homeClub.Stadium, // Definir o estádio para o estádio do clube da casa
+                Stadium = homeClub.Stadium,   
                 User = user,
             });
         }

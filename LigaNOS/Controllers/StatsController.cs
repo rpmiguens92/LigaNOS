@@ -9,6 +9,7 @@ using LigaNOS.Data.Entities;
 using LigaNOS.Data;
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 namespace LigaNOS.Controllers
 {
     public class StatsController : Controller
@@ -29,6 +30,7 @@ namespace LigaNOS.Controllers
             _context = dataContext;
         }
         // GET: StatsController
+        [Authorize(Roles = "Admin, Club, Emplo, Anony")]
         public ActionResult Index()
         {
             if (_matchRepository == null)
@@ -61,17 +63,71 @@ namespace LigaNOS.Controllers
                 var matchesForClub = _context.Matches
                     .Where(m => m.HomeClub.Id == club.Id || m.AwayClub.Id == club.Id)
                     .ToList();
-                var points = matchesForClub.Sum(m => m.HomeClub.Id == club.Id
-                    ? (m.HomeGoals > m.AwayGoals ? 3 : m.HomeGoals == m.AwayGoals ? 1 : 0)
-                    : (m.AwayGoals > m.HomeGoals ? 3 : m.AwayGoals == m.HomeGoals ? 1 : 0));
-                var goalsScored = matchesForClub.Sum(m => m.HomeClub.Id == club.Id ? m.HomeGoals : m.AwayGoals);
-                var goalsConceded = matchesForClub.Sum(m => m.HomeClub.Id == club.Id ? m.AwayGoals : m.HomeGoals);
+
+                int wins = 0;
+                int losses = 0;
+                int draws = 0;
+
+                var points = 0;
+                var goalsScored = 0;
+                var goalsConceded = 0;
+
+                foreach (var match in matchesForClub) //count points, goals, wins, losses, draws
+                {
+                    bool isHomeTeam = match.HomeClub.Id == club.Id;
+
+                    if (isHomeTeam)
+                    {
+                        goalsScored += match.HomeGoals;
+                        goalsConceded += match.AwayGoals;
+
+                        if (match.HomeGoals > match.AwayGoals)
+                        {
+                            points += 3;
+                            wins++;
+                        }
+                        else if (match.HomeGoals == match.AwayGoals)
+                        {
+                            points += 1;
+                            draws++;
+                        }
+                        else
+                        {
+                            losses++;
+                        }
+                    }
+                    else
+                    { 
+                        goalsScored += match.AwayGoals;
+                        goalsConceded += match.HomeGoals;
+
+                        if (match.AwayGoals > match.HomeGoals)
+                        {
+                            points += 3;
+                            wins++;
+                        }
+                        else if (match.AwayGoals == match.HomeGoals)
+                        {
+                            points += 1;
+                            draws++;
+                        }
+                        else
+                        {
+                            losses++;
+                        }
+                    }
+                }
+
                 clubStats.Add(new ClubStatViewModel
                 {
                     ClubName = club.Name,
                     Points = points,
                     GoalsScored = goalsScored,
-                    GoalsConceded = goalsConceded
+                    GoalsConceded = goalsConceded,
+                    Wins = wins,
+                    Losses = losses,
+                    Draws = draws,
+                    ClubSymbol = club.ImageFileId
                 });
             }
             var model = new StatViewModel

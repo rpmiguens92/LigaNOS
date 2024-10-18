@@ -1,6 +1,41 @@
 ﻿@model LigaNOS.Models.StatViewModel
  
   
+
+
+<h2>Score</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Club Name</th>
+            <th>Points</th>
+            <th>Goals Scored</th>
+            <th>Goals Conceded</th>
+            <th>Wins</th>
+            <th>Losses</th>
+            <th>Draws</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var club in Model.ClubStats)
+        {
+            <tr>
+                
+                <td style="display: flex; align-items: center;">
+                    
+                    <img src="@club.ClubSymbol" alt="@club.ClubName" style="width: 20px; height: 20px; margin-right: 10px;" />
+                    <span>@club.ClubName</span>
+                </td>
+                <td>@club.Points</td>
+                <td>@club.GoalsScored</td>
+                <td>@club.GoalsConceded</td>
+                <td>@club.Wins</td>
+                <td>@club.Losses</td>
+                <td>@club.Draws</td>
+            </tr>
+        }
+    </tbody>
+</table>
 <h2>Realized Games</h2>
 <table class="table">
     <thead>
@@ -25,35 +60,6 @@
                 <td>@match.MatchDay.ToShortDateString()</td>
                 <td>@match.MatchTime</td>
                 <td>@match.Stadium</td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-<h2>Score</h2>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Club Name</th>
-            <th>Points</th>
-            <th>Goals Scored</th>
-            <th>Goals Conceded</th>
-            <th>Wins</th>
-            <th>Losses</th>
-            <th>Draws</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var club in Model.ClubStats)
-        {
-            <tr>
-                <td>@club.ClubName</td>
-                <td>@club.Points</td>
-                <td>@club.GoalsScored</td>
-                <td>@club.GoalsConceded</td>
-                <td>@club.Wins</td>
-                <td>@club.Losses</td>
-                <td>@club.Draws</td>
             </tr>
         }
     </tbody>

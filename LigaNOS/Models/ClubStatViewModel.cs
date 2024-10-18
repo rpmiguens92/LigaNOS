@@ -1,5 +1,5 @@
 ﻿using LigaNOS.Data.Entities;
-
+using System;
 namespace LigaNOS.Models
 {
     public class ClubStatViewModel : Club
@@ -14,5 +14,9 @@ namespace LigaNOS.Models
         public int Wins { get; set; }
         public int Losses { get; set; }
         public int Draws { get; set; }
+        public Guid ClubSymbol { get; set; }
+        public string ImageFullPath => ImageFileId == Guid.Empty
+            ? $"https://liganos.azurewebsites.net/images/noimage.jpg"
+           : $"https://liganos.blob.core.windows.net/clubs/{ImageFileId}";
     }
 }

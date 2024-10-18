@@ -6,6 +6,7 @@ using LigaNOS.Data.Entities;
 using LigaNOS.Data.Repositories;
 using LigaNOS.Helpers;
 using LigaNOS.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LigaNOS.Controllers
 {
+    //[Authorize(Roles = "Club")]
     public class PlayersController : Controller
     {
 

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 using LigaNOS.Models;
+using System;
 
 namespace LigaNOS.Helpers
 {
@@ -9,14 +10,25 @@ namespace LigaNOS.Helpers
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
-        public UserHelper(UserManager<User> userManager, SignInManager<User> signInManager)
+        private readonly RoleManager<IdentityRole> _roleManager;
+        public UserHelper(UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<IdentityRole>roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _roleManager = roleManager;
         }
         public async Task<IdentityResult> AddUserAsync(User user, string password)
         {
-            return await _userManager.CreateAsync(user, password);
+            try
+            {
+                return await _userManager.CreateAsync(user, password);
+            }
+            catch (Exception ex)
+            {
+                 
+                throw new InvalidOperationException($"Error creating user: {ex.Message}", ex);
+            }
+
         }
         public async Task<IdentityResult> ChangePasswordAsync(User user, string oldPassword, string newPassword)
         {
@@ -42,6 +54,29 @@ namespace LigaNOS.Helpers
         public async Task LogoutAsync()
         {
             await _signInManager.SignOutAsync();
+        }
+
+        public async Task CheckRoleAsync(string roleName)
+        {
+            var roleExists = await _roleManager.RoleExistsAsync(roleName);
+            if (!roleExists)
+            {
+                await _roleManager.CreateAsync(new IdentityRole
+                {
+                    Name = roleName
+                });
+
+            }
+        }
+
+        public async Task<bool> IsUserInRoleAsync(User user, string roleName)
+        {
+            return await _userManager.IsInRoleAsync(user, roleName);
+        }
+
+        public async Task AddUserToRoleAsync(User user, string roleName)
+        {
+            await _userManager.AddToRoleAsync(user, roleName);
         }
     }
 }

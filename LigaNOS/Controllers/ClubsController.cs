@@ -10,9 +10,11 @@ using LigaNOS.Helpers;
 using LigaNOS.Models;
 using System;
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LigaNOS.Controllers
 {
+    [Authorize(Roles = "Admin, Club")]
     public class ClubsController : Controller
     {
         private readonly IClubRepository _clubRepository;
@@ -28,12 +30,14 @@ namespace LigaNOS.Controllers
         }
 
         // GET: ClubsController
+        
         public IActionResult Index()
         {
             return View(_clubRepository.GetAll().OrderBy(c => c.Name));
         }
 
         // GET: ClubsController/Details/5
+        [Authorize(Roles = "Club")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -56,6 +60,7 @@ namespace LigaNOS.Controllers
         }
 
         // GET: ClubsController/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
@@ -101,6 +106,7 @@ namespace LigaNOS.Controllers
         }
 
         // GET: ClubsController/Edit/5
+        [Authorize(Roles = "Admin ")]
         public async Task<IActionResult> Edit(int id)
         { 
 
@@ -169,8 +175,9 @@ namespace LigaNOS.Controllers
             return View(model);
         }
 
-            // GET: ClubsController/Delete/5
-            public async Task<IActionResult> Delete(int? id)
+        // GET: ClubsController/Delete/5
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(int? id)
             {
                 if (id == null)
                 {
