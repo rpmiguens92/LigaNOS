@@ -3,13 +3,24 @@
     ViewData["Title"] = "Index";
 }
 
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-warning">
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <p>@error.ErrorMessage</p>
+        }
+    </div>
+}
+
 <h3>Matches</h3>
-
-
+ 
 
 <p>
     <a asp-action="Create" class="btn btn-primary">Create New Match</a>
 </p>
+<p></p>
 <table class="table">
     <thead>
         <tr>

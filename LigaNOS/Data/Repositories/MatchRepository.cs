@@ -17,5 +17,11 @@ namespace LigaNOS.Data.Repositories
         {
             return _context.Matches.Include(m => m.HomeClub).Include(m => m.AwayClub);
         }
+
+        public async Task CreateAsync(Match match)
+        {
+            await _context.Matches.AddAsync(match);
+            await _context.SaveChangesAsync();
+        }
     }
 }

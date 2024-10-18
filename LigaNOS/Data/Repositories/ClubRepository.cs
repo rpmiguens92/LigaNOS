@@ -37,5 +37,10 @@ namespace LigaNOS.Data.Repositories
 
             return await _context.Matches.AnyAsync(m => m.HomeClubId == clubId || m.AwayClubId == clubId);
         }
+
+        public async Task<Club> GetByIdAsync(int id)
+        {
+            return await _context.Clubs.FindAsync(id);
+        }
     }
 }

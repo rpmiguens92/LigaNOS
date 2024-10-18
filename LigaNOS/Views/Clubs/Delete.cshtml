@@ -3,7 +3,18 @@
     ViewData["Title"] = "Delete";
 }
 
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-warning">
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <p>@error.ErrorMessage</p>
+        }
+    </div>
+}
+
 <h3>Are you sure you want to delete this Club?</h3>
+<p></p>
 <div>
 <dl class="row">
         <dt class="col-sm-2">

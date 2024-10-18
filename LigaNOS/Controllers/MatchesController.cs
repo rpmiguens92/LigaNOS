@@ -22,7 +22,9 @@ namespace LigaNOS.Controllers
         private readonly ITeamService _teamService;
         private readonly IMatchGenerator _matchGenerator;
 
-        public MatchesController(IMatchRepository matchRepository, IUserHelper userHelper, IBlobHelper blobHelper, IConverterHelper converterHelper, IClubRepository clubRepository, ITeamService teamService, IMatchGenerator matchGenerator)
+        public MatchesController(IMatchRepository matchRepository, 
+            IUserHelper userHelper, IBlobHelper blobHelper, IConverterHelper converterHelper,
+            IClubRepository clubRepository, IMatchGenerator matchGenerator)
         {
             _matchRepository = matchRepository;
             _matchGenerator = matchGenerator;
@@ -30,7 +32,6 @@ namespace LigaNOS.Controllers
             _blobHelper = blobHelper;
             _converterHelper = converterHelper;
             _clubRepository = clubRepository;
-            _teamService = teamService;
         }
 
         // GET: MatchesController
@@ -52,8 +53,11 @@ namespace LigaNOS.Controllers
                 return NotFound();
             }
 
-            var match = await _matchRepository.GetByIdAsync(id.Value);
-             
+            var match = await _matchRepository.GetAll()
+               .Include(m => m.HomeClub)
+               .Include(m => m.AwayClub)
+               .FirstOrDefaultAsync(m => m.Id == id.Value);
+
             if (match == null)
             {
                 return NotFound();
@@ -63,16 +67,20 @@ namespace LigaNOS.Controllers
         }
 
         // GET: MatchesController/Create
-        public async Task<IActionResult> CreateAsync()
-        {
-            var teams = await _teamService.GetTeamsAsync();
-            if (teams.Count % 2 != 0)
-            {
-                ModelState.AddModelError(string.Empty, "The total number of teams must be even.");
-                return View("Error"); // Or return to a specific view with an error message
-            }
+        public async Task<IActionResult> Create()
+        { 
+            var match = await _matchGenerator.GenerateMatch();
 
-            var matchViewModel = await _matchGenerator.GenerateMatchAsync();
+            var matchViewModel = new MatchViewModel
+            {
+                HomeClub = match.HomeClub,
+                AwayClub = match.AwayClub,
+                Stadium = match.Stadium,
+                HomeClubId = match.HomeClubId,  
+                AwayClubId = match.AwayClubId,
+                MatchDay = DateTime.Now,
+            };
+
             return View(matchViewModel);
         }
 
@@ -84,26 +92,34 @@ namespace LigaNOS.Controllers
 
             if (ModelState.IsValid)
             {
+                if (!User.Identity.IsAuthenticated)
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+
+               
                 var homeClub = await _clubRepository.GetByIdAsync(model.HomeClubId);
                 var awayClub = await _clubRepository.GetByIdAsync(model.AwayClubId);
 
                 if (homeClub == null || awayClub == null)
                 {
-                    return NotFound();
+                    return NotFound("No clubs available for matches.");
                 }
 
                 var match = new Match
                 {
+                    HomeClubId = homeClub.Id,
+                    AwayClubId = awayClub.Id,
                     HomeClub = homeClub,
                     AwayClub = awayClub,
                     Stadium = model.Stadium,
                     MatchDay = model.MatchDay,
                     MatchTime = model.MatchTime
                 };
+
                 match.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+                
                 await _matchRepository.CreateAsync(match);
-
-
                 return RedirectToAction(nameof(Index));
             }
 
@@ -113,18 +129,40 @@ namespace LigaNOS.Controllers
 
         // GET: MatchesController/Edit/5
         public async Task<IActionResult> Edit(int? id)
-        {
+        {  
             if (id == null)
             {
                 return NotFound();
-            }
+            } 
 
-            var match = await _matchRepository.GetByIdAsync(id.Value);
+            var match = await _matchRepository.GetAll()
+                                .Include(m => m.HomeClub)
+                                .Include(m => m.AwayClub)
+                                .FirstOrDefaultAsync(m => m.Id == id.Value);
+
             if (match == null)
             {
                 return NotFound();
             }
-            var model = _converterHelper.ToMatchViewModel(match);
+ 
+            if (match.HomeClub == null || match.AwayClub == null)
+            {
+                ModelState.AddModelError("", "Clubs not defined.");
+                return View();
+            }
+
+            
+            var model = new MatchViewModel
+            {
+                Id = match.Id,
+                HomeClub = match.HomeClub.Name, 
+                AwayClub = match.AwayClub.Name, 
+                Stadium = match.Stadium,
+                HomeGoals = match.HomeGoals,
+                AwayGoals = match.AwayGoals,
+                MatchDay = match.MatchDay,
+                MatchTime = match.MatchTime
+            };
 
             return View(model);
         }
@@ -132,22 +170,39 @@ namespace LigaNOS.Controllers
         // POST: MatchesController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit (MatchViewModel model)
+        public async Task<IActionResult> Edit(int id, MatchViewModel model)
         {
+            if (id != model.Id)
+            {
+                return NotFound();
+            }
+
             if (ModelState.IsValid)
             {
+                if (!User.Identity.IsAuthenticated)
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+
                 try
                 {
-                    Guid imageId = Guid.Empty;
-
-                    if (model.ImageFile != null && model.ImageFile.Length > 0)
+                    var match = await _matchRepository.GetByIdAsync(model.Id);
+                    if (match == null)
                     {
-
-                        imageId = await _blobHelper.UploadBlobAsync(model.ImageFile, "matches");
+                        return NotFound();
                     }
-                    var match = _converterHelper.ToMatch(model, imageId, false);
+
+                    match.HomeClub = await _clubRepository.GetByIdAsync(model.HomeClubId);
+                    match.AwayClub = await _clubRepository.GetByIdAsync(model.AwayClubId);
+                    match.Stadium = model.Stadium;
+                    match.MatchDay = model.MatchDay;
+                    match.MatchTime = model.MatchTime;
+                    match.HomeGoals = model.HomeGoals;
+                    match.AwayGoals = model.AwayGoals;
+
 
                     match.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+
                     await _matchRepository.UpdateAsync(match);
                 }
                 catch (DbUpdateConcurrencyException)
@@ -160,6 +215,7 @@ namespace LigaNOS.Controllers
                     {
                         throw;
                     }
+                    
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -173,7 +229,12 @@ namespace LigaNOS.Controllers
             {
                 return NotFound();
             }
-            var match = await _matchRepository.GetByIdAsync(id.Value);
+            
+
+            var match = await _matchRepository.GetAll()
+              .Include(m => m.HomeClub)
+              .Include(m => m.AwayClub)
+              .FirstOrDefaultAsync(m => m.Id == id.Value);
 
             if (match == null)
             {
@@ -182,12 +243,25 @@ namespace LigaNOS.Controllers
             return View(match);
         }
 
+
         // POST: MatchesController/Delete/5
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var match = await _matchRepository.GetByIdAsync(id);
+
+            if (match == null)
+            {
+                return NotFound();
+            }
+            //delete only if the match is not played yet
+            if (match.MatchDay.Date < DateTime.Now.Date)
+            {
+                ModelState.AddModelError(string.Empty, "Game already happened, for statistics reasons we can´t remove the results");
+                return View(match);
+            }
+            await _matchRepository.DeleteAsync(match);
             return RedirectToAction(nameof(Index));
         }
     }

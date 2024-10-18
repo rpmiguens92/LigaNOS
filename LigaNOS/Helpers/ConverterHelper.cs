@@ -12,7 +12,7 @@ namespace LigaNOS.Helpers
         {
             return new Club
             {
-                //Id = isNew ? 0 : model.Id,
+                
                 ImageFileId = path,
                 Name = model.Name,
                 Coach = model.Coach,
@@ -35,13 +35,12 @@ namespace LigaNOS.Helpers
 
         public Match ToMatch(MatchViewModel model, Guid path, bool isNew)
         {
-            return new MatchViewModel
-            {
-                //Id = isNew ? 0 : model.Id,
-                HomeClub = model.HomeClub,
-                AwayClub = model.AwayClub,
+            return new Match
+            { 
+                HomeClub = new Club { Name = model.HomeClub },
+                AwayClub = new Club { Name = model.AwayClub },
                 HomeGoals = model.HomeGoals,
-                AwayClubGoals = model.AwayClubGoals,
+                AwayGoals = model.AwayGoals,
                 MatchDay = model.MatchDay,
                 Stadium = model.Stadium,
                 MatchTime = model.MatchTime,
@@ -92,7 +91,7 @@ namespace LigaNOS.Helpers
                 HomeClub = match.HomeClub?.Name,
                 AwayClub = match.AwayClub?.Name,
                 HomeGoals = match.HomeGoals,
-                AwayClubGoals = match.AwayGoals,
+                AwayGoals = match.AwayGoals,
                 MatchDay = match.MatchDay,
                 Stadium = match.Stadium,
                 MatchTime = match.MatchTime,

@@ -9,10 +9,8 @@ namespace LigaNOS.Data.Entities
 {
     public class MatchGenerator : IMatchGenerator
     {
-
         private readonly IClubRepository _clubRepository;
         private readonly IMatchRepository _matchRepository;
-    
         private List<Match> Matches { get; set; }
         private int contJourneys;
 
@@ -20,38 +18,38 @@ namespace LigaNOS.Data.Entities
         {
             _clubRepository = clubRepository;
             _matchRepository = matchRepository;
-            Matches = new List<Match>(); // Assume you have this stored elsewhere in reality
+            Matches = new List<Match>();
             contJourneys = 0;
         }
 
-        public async Task<MatchViewModel> GenerateMatchAsync()
+        public async Task<MatchViewModel> GenerateMatch()
         {
-           
+
             var clubs = _clubRepository.GetAll().ToList();
             if (clubs.Any(c => c.Id == 0))
             {
-                throw new InvalidOperationException("Um ou mais clubes não têm um ID válido.");
+                throw new InvalidOperationException("Club Id invalid.");
             }
 
             if (clubs.Count % 2 != 0)
             {
-                throw new InvalidOperationException("O Número total de equipas tem de ser par!");
+                throw new InvalidOperationException("Insufficient clubs");
             }
 
-            
+
             if (Matches.Count == clubs.Count * (clubs.Count - 1))
             {
-                throw new InvalidOperationException("Época completa!");
+                throw new InvalidOperationException("Full season!");
             }
 
-            
+
             int gamesPerJourney = clubs.Count / 2;
             if (Matches.Count % gamesPerJourney == 0)
             {
                 contJourneys++;
             }
 
-             
+
             HashSet<Club> clubsPlayedThisJourney = new HashSet<Club>();
             int currentJourney = Matches.Count - (Matches.Count % gamesPerJourney);
             for (int i = currentJourney; i < Matches.Count; i++)
@@ -63,7 +61,7 @@ namespace LigaNOS.Data.Entities
             Club randomHomeGame;
             Club randomAwayGame;
 
-            
+
             var totalGamesFirstRound = (clubs.Count * (clubs.Count - 1) / 2);
             if (Matches.Count >= totalGamesFirstRound)
             {
@@ -78,26 +76,25 @@ namespace LigaNOS.Data.Entities
                 {
                     validMatch = true;
 
-                     
                     var randClubID = new Random();
                     randomHomeGame = clubs[randClubID.Next(clubs.Count)];
                     randomAwayGame = clubs[randClubID.Next(clubs.Count)];
 
-                    
+
                     if (randomHomeGame == randomAwayGame)
                     {
                         validMatch = false;
                     }
                     else
                     {
-                         
+
                         if (clubsPlayedThisJourney.Contains(randomHomeGame) || clubsPlayedThisJourney.Contains(randomAwayGame))
                         {
                             validMatch = false;
                         }
                         else
                         {
-                            
+
                             foreach (var match in Matches)
                             {
                                 if (match.HomeClub == randomHomeGame && match.AwayClub == randomAwayGame)
@@ -110,33 +107,31 @@ namespace LigaNOS.Data.Entities
                     }
                 } while (!validMatch);
 
-                 
+
                 clubsPlayedThisJourney.Add(randomHomeGame);
                 clubsPlayedThisJourney.Add(randomAwayGame);
             }
 
-             
+
             var newMatch = new MatchViewModel
             {
                 HomeClub = randomHomeGame.Name,
                 AwayClub = randomAwayGame.Name,
                 Stadium = randomHomeGame.Stadium,
-              
+                HomeClubId = randomHomeGame.Id,  
+                AwayClubId = randomAwayGame.Id
+
             };
 
-            
+
             var randomMatch = new Match
             {
-                HomeClub = randomHomeGame,
-                AwayClub = randomAwayGame,
+                HomeClubId = randomHomeGame.Id,
+                AwayClubId = randomAwayGame.Id,
                 Stadium = newMatch.Stadium,
-                
+
             };
-
-            await _matchRepository.CreateAsync(randomMatch);
-
-            Matches.Add(randomMatch);
-
+           
             return newMatch;
         }
     }

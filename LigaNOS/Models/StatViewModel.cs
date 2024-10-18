@@ -9,7 +9,6 @@ namespace LigaNOS.Models
         public List<MatchViewModel> MatchResults { get; set; }
         public List<ClubStatViewModel> ClubStats { get; set; }
 
-
     }
 }
 

@@ -2,8 +2,18 @@
 @{
     ViewData["Title"] = "Create";
 }
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-warning">
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <p>@error.ErrorMessage</p>
+        }
+    </div>
+}
 
 <h1>Create New Club</h1>
+<p></p>
 
 <div class="row">
     <div class="col-md-4">

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace LigaNOS.Data.Repositories
-
 {
     public class StatRepository : GenericRepository<Stat>, IStatRepository
     {
@@ -13,9 +12,9 @@ namespace LigaNOS.Data.Repositories
         {
             _context = context;
         }
-        public IQueryable  GetAllWithUsers()
+        public IQueryable GetAllWithUsers()
         {
             return _context.Stats.Include(c => c.User);
         }
     }
-}
+} 

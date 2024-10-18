@@ -2,89 +2,60 @@
 @{
     ViewData["Title"] = "Create";
 }
+ 
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-warning">
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <p>@error.ErrorMessage</p>
+        }
+    </div>
+}
 
 <h1>Create Match</h1>
-
-
+<p></p>
 
 <div class="row">
     <div class="col-md-4">
-        <form method="post" asp-action="Create">
-            <div>
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
+
+            <div class="form-group">
                 <label for="homeClub">Home Club:</label>
+                <input type="hidden" asp-for="HomeClubId" />  
                 <input type="text" id="homeClub" name="HomeClub" value="@Model.HomeClub" readonly />
             </div>
-            <div>
+            <div class="form-group">
                 <label for="awayClub">Away Club:</label>
+                <input type="hidden" asp-for="AwayClubId" />  
                 <input type="text" id="awayClub" name="AwayClub" value="@Model.AwayClub" readonly />
             </div>
-           
-            <div>
+            <div class="form-group">
                 <label for="stadium">Stadium:</label>
                 <input type="text" id="stadium" name="Stadium" value="@Model.Stadium" readonly />
             </div>
-            <div>
+            <div class="form-group">
                 <label for="matchDay">Match Day:</label>
-                <input type="date" id="matchDay" name="MatchDay" />
+                <input type="date" id="matchDay" asp-for="MatchDay" min="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" />
             </div>
-            <div>
+            <div class="form-group">
                 <label for="matchTime">Match Time:</label>
-                <input type="time" id="matchTime" name="MatchTime" />
+                <input type="time" asp-for="MatchTime" class="form-control" />
             </div>
-           
-            <button type="submit">Create Match</button>
-            
+
+      
+
+            <div class="form-group">
+            <button type="submit" class="btn btn-primary">Create</button>
+            <a asp-action="Index" class="btn btn-success">Back to List</a>
+            </div>
         </form>
-      @*   <form asp-action="Create" method="post" enctype="multipart/form-data">
-
-            <div class="form-group">
-                <label asp-for="HomeClub" class="control-label"></label>
-                <input asp-for="HomeClub" class="form-control"  />
-                <span asp-validation-for="HomeClub" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="AwayClub" class="control-label"></label>
-                <input asp-for="AwayClub" class="form-control" />
-                <span asp-validation-for="AwayClub" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="HomeGoals" class="control-label"></label>
-                <input asp-for="HomeGoals" class="form-control" />
-                <span asp-validation-for="HomeGoals" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AwayGoals" class="control-label"></label>
-                <input asp-for="AwayGoals" class="form-control" />
-                <span asp-validation-for="AwayGoals" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MatchDay" class="control-label"></label>
-                <input asp-for="MatchDay" class="form-control" />
-                <span asp-validation-for="MatchDay" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MatchTime" class="control-label"></label>
-                <input asp-for="MatchTime" class="form-control" />
-                <span asp-validation-for="MatchTime" class="text-danger"></span>
-            </div>
-         
-            <div class="form-group">
-                <label asp-for="Stadium" class="control-label"></label>
-                <input asp-for="Stadium" class="form-control" />
-                <span asp-validation-for="Stadium" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary">Create</button>
-                <a asp-action="Index" class="btn btn-success">Back to List</a>
-            </div>
-  
-        </form> *@
     </div>
 </div>
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
+
+      
     }
 }

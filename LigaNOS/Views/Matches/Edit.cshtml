@@ -1,62 +1,79 @@
-﻿@model LigaNOS.Data.Entities.Match
+﻿@model LigaNOS.Models.MatchViewModel
 @{
     ViewData["Title"] = "Edit";
 }
 
-
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-warning">
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <p>@error.ErrorMessage</p>
+        }
+    </div>
+}
 
 <h1>Edit</h1>
-
+<p></p>
 <div class="row">
     <div class="col-md-4">
 
         <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
-            <div class="col-md-4">
 
-                <div class="form-group">
-                    <label asp-for="HomeClub" class="control-label"></label>
-                    <input asp-for="HomeClub" class="form-control" type="file" />
-                    <span asp-validation-for="HomeClub" class="text-danger"></span>
-                </div>
+            
+           
+            <div class="form-group">   
+                <h4>@Model.HomeClub X @Model.AwayClub  </h4> 
+            </div>
+   
+            <div class="form-group text-center">
+                <label>Home Goals</label>
+                <span class="mx-2"></span>
+                <label>Away Goals</label>
+            </div>
 
-                <div class="form-group">
-                    <label asp-for="AwayClub" class="control-label"></label>
-                    <input asp-for="AwayClub" class="form-control" />
-                    <span asp-validation-for="AwayClub" class="text-danger"></span>
-                </div>
-
-                <div class="form-group">
-                    <label asp-for="HomeGoals" class="control-label"></label>
-                    <input asp-for="HomeGoals" class="form-control" />
-                    <span asp-validation-for="HomeGoals" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="AwayGoals"  class="control-label"></label>
-                    <input asp-for="AwayGoals" class="form-control" />
-                    <span asp-validation-for="AwayGoals" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="MatchDay" class="control-label"></label>
-                    <input asp-for="MatchDay" class="form-control" />
-                    <span asp-validation-for="MatchDay" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="MatchTime" class="control-label"></label>
-                    <input asp-for="MatchTime" class="form-control" />
-                    <span asp-validation-for="MatchTime" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Stadium" class="control-label"></label>
-                    <input asp-for="Stadium" class="form-control" />
-                    <span asp-validation-for="Stadium" class="text-danger"></span>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-6">
+                        <input asp-for="HomeGoals" class="form-control" min="0" />
+                        <span asp-validation-for="HomeGoals" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <input asp-for="AwayGoals" class="form-control" min="0" />
+                        <span asp-validation-for="AwayGoals" class="text-danger"></span>
+                    </div>
                 </div>
             </div>
+   
+            <div class="form-group">
+                <label>Stadium:</label>
+                <p> @Model.Stadium</p>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="MatchDay" class="control-label"></label>
+                <input asp-for="MatchDay" class="form-control" />
+                <span asp-validation-for="MatchDay" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="MatchTime" class="control-label"></label>
+                <input asp-for="MatchTime" class="form-control" />
+                <span asp-validation-for="MatchTime" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-success">Back to List</a>
+            </div>
         </form>
-    </div>
-    <div class="form-group">
-        <input type="submit" value="Save" class="btn btn-primary" />
-        <a asp-action="Index" class="btn btn-success">Back to List</a>
-    </div>
+    </div> 
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

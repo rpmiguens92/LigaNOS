@@ -45,6 +45,12 @@ namespace LigaNOS.Data
                 .WithMany(c => c.AwayStats)  
                 .HasForeignKey(s => s.AwayClubId)
                 .OnDelete(DeleteBehavior.Restrict);
+           
+            modelBuilder.Entity<Player>()
+                .HasOne(p => p.Clubs)  
+                .WithMany(c => c.Players)  
+                .HasForeignKey(p => p.ClubId)  
+                .OnDelete(DeleteBehavior.SetNull);
 
         }
     }

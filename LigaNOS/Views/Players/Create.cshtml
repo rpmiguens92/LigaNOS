@@ -2,6 +2,16 @@
 @{
     ViewData["Title"] = "Create";
 }
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-warning">
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <p>@error.ErrorMessage</p>
+        }
+    </div>
+}
+
 
 <h1>Create New Player</h1>
 
@@ -21,7 +31,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="DateOfBirth" class="control-label"></label>
-                <input asp-for="DateOfBirth" class="form-control" />
+                <input asp-for="DateOfBirth" class="form-control" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
                 <span asp-validation-for="DateOfBirth" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -29,11 +39,14 @@
                 <input asp-for="Position" class="form-control" />
                 <span asp-validation-for="Position" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="ClubId" class="control-label"></label>
-                <select asp-for="ClubId" class="form-control" asp-items="ViewBag.Clubs"></select>
-                <span asp-validation-for="ClubId" class="text-danger"></span>
+                <select asp-for="ClubId" class="form-control" asp-items="ViewBag.Clubs">
+                 
+                </select> <span asp-validation-for="ClubId" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">Create</button>
                 <a asp-action="Index" class="btn btn-success">Back to List</a>

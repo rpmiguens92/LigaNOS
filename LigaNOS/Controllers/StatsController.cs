@@ -9,8 +9,6 @@ using LigaNOS.Data.Entities;
 using LigaNOS.Data;
 using System;
 using System.Collections.Generic;
- 
-
 namespace LigaNOS.Controllers
 {
     public class StatsController : Controller
@@ -47,7 +45,7 @@ namespace LigaNOS.Controllers
                     AwayClub = m.AwayClub.Name,
                     HomeGoals = m.HomeGoals,
                     AwayGoals = m.AwayGoals,
-                    MatchDate = m.MatchDay,
+                    MatchDay = m.MatchDay,
                     MatchTime = m.MatchTime,
                     Stadium = m.Stadium
                 })
@@ -85,18 +83,17 @@ namespace LigaNOS.Controllers
 
         }
 
-    // GET: StatsController/Details/5
-    public ActionResult Details(int id)
+
+        // GET: StatsController/Details/5
+        public ActionResult Details(int id)
         {
             return View();
         }
-
         // GET: StatsController/Create
         public ActionResult Create()
         {
             return View();
         }
-
         // POST: StatsController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -111,13 +108,11 @@ namespace LigaNOS.Controllers
                 return View();
             }
         }
-
         // GET: StatsController/Edit/5
         public ActionResult Edit(int id)
         {
             return View();
         }
-
         // POST: StatsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -132,13 +127,11 @@ namespace LigaNOS.Controllers
                 return View();
             }
         }
-
         // GET: StatsController/Delete/5
         public ActionResult Delete(int id)
         {
             return View();
         }
-
         // POST: StatsController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]

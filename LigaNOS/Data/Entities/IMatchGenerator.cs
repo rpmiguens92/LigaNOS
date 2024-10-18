@@ -5,6 +5,6 @@ namespace LigaNOS.Data.Entities
 {
     public interface IMatchGenerator
     {
-        Task<MatchViewModel> GenerateMatchAsync();
+        Task<MatchViewModel> GenerateMatch();
     }
 }

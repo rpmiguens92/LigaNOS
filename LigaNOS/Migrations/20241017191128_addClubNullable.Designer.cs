@@ -4,14 +4,16 @@ using LigaNOS.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace LigaNOS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241017191128_addClubNullable")]
+    partial class addClubNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,9 +81,6 @@ namespace LigaNOS.Migrations
                     b.Property<int>("AwayGoals")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ClubsId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("HomeClubId")
                         .HasColumnType("int");
 
@@ -106,8 +105,6 @@ namespace LigaNOS.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AwayClubId");
-
-                    b.HasIndex("ClubsId");
 
                     b.HasIndex("HomeClubId");
 
@@ -417,10 +414,6 @@ namespace LigaNOS.Migrations
                         .HasForeignKey("AwayClubId")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("LigaNOS.Data.Entities.Club", "Clubs")
-                        .WithMany()
-                        .HasForeignKey("ClubsId");
-
                     b.HasOne("LigaNOS.Data.Entities.Club", "HomeClub")
                         .WithMany("HomeMatches")
                         .HasForeignKey("HomeClubId")
@@ -435,8 +428,6 @@ namespace LigaNOS.Migrations
                         .HasForeignKey("UserId");
 
                     b.Navigation("AwayClub");
-
-                    b.Navigation("Clubs");
 
                     b.Navigation("HomeClub");
 

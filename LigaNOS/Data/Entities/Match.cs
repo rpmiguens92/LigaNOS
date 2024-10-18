@@ -25,8 +25,9 @@ namespace LigaNOS.Data.Entities
         [ForeignKey("HomeClubId")]
         public int? HomeClubId { get; set; }
         [ForeignKey("AwayClubId")]
-        public int? AwayClubId { get; set; }  
+        public int? AwayClubId { get; set; }
 
+        public Club Clubs { get; set; }
         public User User { get; set; }
 
  

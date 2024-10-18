@@ -35,11 +35,8 @@ namespace LigaNOS.Controllers
         // GET: PlayersController
         public IActionResult Index()
         {
-
-
             var players = _playerRepository.GetAll().Include(p => p.Clubs).OrderBy(p => p.Name).ToList();
  
-
             return View(players);
         }
             // GET: PlayersController/Details/5
@@ -62,7 +59,11 @@ namespace LigaNOS.Controllers
         // GET: PlayersController/Create
         public IActionResult Create()
         {
-            ViewBag.Clubs = new SelectList(_clubRepository.GetAll(), "Id", "Name");
+            var clubs = _clubRepository.GetAll().ToList();
+            clubs.Insert(0, new Club { Id = 0, Name = "-- No Club Selected --" });
+
+           
+            ViewBag.Clubs = new SelectList(clubs, "Id", "Name");
             return View();
         }
 
@@ -71,6 +72,16 @@ namespace LigaNOS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PlayerViewModel model)
         {
+            var existingPlayer = await _playerRepository.GetAll()
+          .FirstOrDefaultAsync(c => c.Name.ToLower() == model.Name.ToLower());
+
+            if (existingPlayer != null)
+            {
+                ModelState.AddModelError(string.Empty, "Player already registed.");
+                return View(model);
+            }
+
+
             if (ModelState.IsValid)
             {
                 Guid imageId = Guid.Empty;
@@ -87,12 +98,26 @@ namespace LigaNOS.Controllers
                 }
 
                 player.User = await _userHelper.GetUserByEmailAsync(User.Identity.Name);
-           
+
+
+                //teste
+                if (model.ClubId != 0)  
+                {
+                    player.ClubId = model.ClubId;
+                }
+                else
+                {
+                    player.ClubId = null;  
+                }
+
+
                 await _playerRepository.CreateAsync(player);
 
                 return RedirectToAction(nameof(Index));
             }
-            ViewBag.Clubs = new SelectList(_clubRepository.GetAll(), "Id", "Name", model.ClubId);
+            var clubs = _clubRepository.GetAll().ToList();
+            clubs.Insert(0, new Club { Id = 0, Name = "-- No Club Selected --" });
+            ViewBag.Clubs = new SelectList(clubs, "Id", "Name", model.ClubId);
 
             return View(model);
         }
@@ -107,8 +132,11 @@ namespace LigaNOS.Controllers
                 return NotFound();
             }
             var model = _converterHelper.ToPlayerViewModel(player);
+            //teste
+            var clubs = _clubRepository.GetAll().ToList();
+            clubs.Insert(0, new Club { Id = 0, Name = "-- No Club Selected --" });
 
-            ViewBag.Clubs = new SelectList(_clubRepository.GetAll(), "Id", "Name", model.ClubId);
+            ViewBag.Clubs = new SelectList(clubs, "Id", "Name", model.ClubId);
 
             return View(model);
         }
@@ -132,8 +160,6 @@ namespace LigaNOS.Controllers
                         return NotFound(); 
                     }
 
-                    // Inicializa o imageId com o valor existente
-                    Guid imageId = model.ImageFileId;
 
                     if (model.ImageFile != null && model.ImageFile.Length > 0)
                     {
@@ -146,7 +172,17 @@ namespace LigaNOS.Controllers
                     player.Name = model.Name;
                     player.DateOfBirth = model.DateOfBirth;
                     player.Position = model.Position;
-                    player.ClubId = model.ClubId; 
+
+                    //teste
+
+                    if (model.ClubId == 0)
+                    {
+                        player.ClubId = null;
+                    }
+                    else
+                    {
+                        player.ClubId = model.ClubId;
+                    }
                     player.User = await _userHelper.GetUserByEmailAsync(User.Identity.Name);
 
                     await _playerRepository.UpdateAsync(player);
@@ -164,7 +200,11 @@ namespace LigaNOS.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewBag.Clubs = new SelectList(_clubRepository.GetAll(), "Id", "Name", model.ClubId);
+            var clubs = _clubRepository.GetAll().ToList();
+            clubs.Insert(0, new Club { Id = 0, Name = "-- No Club Selected --" });
+            ViewBag.Clubs = new SelectList(clubs, "Id", "Name", model.ClubId);
+
+ 
             return View(model);
         }
 

@@ -41,7 +41,11 @@ namespace LigaNOS.Controllers
                 return NotFound();
             }
 
-            var club = await _clubRepository.GetByIdAsync(id.Value);
+            // var club = await _clubRepository.GetByIdAsync(id.Value);
+            var club = await _clubRepository.GetAll()
+                    .Include(c => c.Players) // Incluir jogadores
+                    .FirstOrDefaultAsync(c => c.Id == id.Value);
+
 
             if (club == null)
             {
@@ -63,6 +67,14 @@ namespace LigaNOS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ClubViewModel model)
         {
+            var existingClub = await _clubRepository.GetAll()
+           .FirstOrDefaultAsync(c => c.Name.ToLower() == model.Name.ToLower());
+
+            if (existingClub != null)
+            {
+                ModelState.AddModelError(string.Empty, "Club already registed.");
+                return View(model);  
+            }
             if (ModelState.IsValid)
             {
                 Guid imageId = Guid.Empty;
@@ -126,7 +138,7 @@ namespace LigaNOS.Controllers
                     {
                         return NotFound();
                     }
-                    // Check if a new image file is provided
+                    //check image
                     if (model.ImageFile != null && model.ImageFile.Length > 0)
                     {
                         club.ImageFileId = await _blobHelper.UploadBlobAsync(model.ImageFile, "clubs");
@@ -186,11 +198,11 @@ namespace LigaNOS.Controllers
                 return NotFound();
             }
 
-            var hasMatches = await _clubRepository.HasMatchesAsync(id); // Use repository method
+            var hasMatches = await _clubRepository.HasMatchesAsync(id);  
 
             if (hasMatches)
             {
-                ModelState.AddModelError(string.Empty, "Cannot delete this club because it has matches associated.");
+                ModelState.AddModelError(string.Empty, "Cannot delete this club because there are matches associated.");
                 return View(club);
             }
 

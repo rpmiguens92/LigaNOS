@@ -2,25 +2,34 @@
 @{
     ViewData["Title"] = "Details";
 }
-
+   
+ 
 <h1>Details</h1>
-
+<p></p>
 <div>
-    <h4>Customer</h4>
     <hr />
     <dl class="row">
-   
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.HomeClub)
+       </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.HomeClub)
+            @Html.DisplayFor(model => model.HomeClub.Name)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.AwayClub)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.AwayClub)
+            @Html.DisplayFor(model => model.AwayClub.Name)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.HomeGoals)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.HomeGoals)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.AwayGoals)
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.AwayGoals)
@@ -29,13 +38,22 @@
             @Html.DisplayNameFor(model => model.MatchDay)
         </dt>
         <dd class="col-sm-10">
+            @Model.MatchDay.ToString("dd/MM/yyyy")
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MatchTime)
+        </dt>
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.MatchTime)
         </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Stadium)
+        </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Stadium)
         </dd>
-       
+       </dl>
+
         <div>
-            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
             <a asp-action="Index" class="btn btn-success">Back to List</a>
         </div>
