@@ -30,7 +30,7 @@ namespace LigaNOS.Controllers
             _context = dataContext;
         }
         // GET: StatsController
-        [Authorize(Roles = "Admin, Club, Emplo, Anony")]
+        
         public ActionResult Index()
         {
             if (_matchRepository == null)

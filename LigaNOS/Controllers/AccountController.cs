@@ -18,6 +18,7 @@ namespace LigaNOS.Controllers
             _userHelper = userHelper;
         }
         // GET: AccountController
+      
         public ActionResult Login()
         {
             if (User.Identity.IsAuthenticated)
@@ -48,6 +49,7 @@ namespace LigaNOS.Controllers
             this.ModelState.AddModelError(string.Empty, "Failed to login");
             return View(model);
         }
+        [Authorize(Roles = "Admin, Club, Emplo ")]
         public async Task<IActionResult> Logout()
         {
             await _userHelper.LogoutAsync();
@@ -98,7 +100,7 @@ namespace LigaNOS.Controllers
             return View(model);
         }
 
-        [Authorize(Roles = "Admin, Club, Empl, Anony")]
+        [Authorize(Roles = "Admin, Club, Emplo")]
         public async Task<IActionResult> ChangeUser()
         {
             var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
@@ -139,7 +141,7 @@ namespace LigaNOS.Controllers
             return View(model);
         }
 
-       [Authorize(Roles = "Admin, Club, Empl, Anony")]
+       [Authorize(Roles = "Admin, Club, Emplo ")]
         public IActionResult ChangePassword()
         {
             return View();
@@ -171,6 +173,11 @@ namespace LigaNOS.Controllers
                 }
             }
             return this.View(model);
+        }
+
+        public IActionResult NotAuthorized()
+        {
+            return View("NotAuthorized");
         }
 
     }

@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace LigaNOS.Controllers
 {
-    [Authorize(Roles = "Admin, Club")]
+   
     public class ClubsController : Controller
     {
         private readonly IClubRepository _clubRepository;
@@ -37,7 +37,7 @@ namespace LigaNOS.Controllers
         }
 
         // GET: ClubsController/Details/5
-        [Authorize(Roles = "Club")]
+        [Authorize(Roles = "Admin, Club")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)

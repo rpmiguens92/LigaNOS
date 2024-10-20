@@ -15,7 +15,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LigaNOS.Controllers
 {
-    //[Authorize(Roles = "Club")]
+    [Authorize(Roles = " Emplo" )]
     public class PlayersController : Controller
     {
 
@@ -100,9 +100,7 @@ namespace LigaNOS.Controllers
                 }
 
                 player.User = await _userHelper.GetUserByEmailAsync(User.Identity.Name);
-
-
-                //teste
+ 
                 if (model.ClubId != 0)  
                 {
                     player.ClubId = model.ClubId;
@@ -134,7 +132,7 @@ namespace LigaNOS.Controllers
                 return NotFound();
             }
             var model = _converterHelper.ToPlayerViewModel(player);
-            //teste
+          
             var clubs = _clubRepository.GetAll().ToList();
             clubs.Insert(0, new Club { Id = 0, Name = "-- No Club Selected --" });
 
@@ -170,13 +168,10 @@ namespace LigaNOS.Controllers
                        
                     }
 
-
                     player.Name = model.Name;
                     player.DateOfBirth = model.DateOfBirth;
                     player.Position = model.Position;
-
-                    //teste
-
+ 
                     if (model.ClubId == 0)
                     {
                         player.ClubId = null;

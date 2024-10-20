@@ -1,8 +1,36 @@
 ﻿@model LigaNOS.Models.StatViewModel
  
-  
+<main>
 
+    <body>
 
+        <div id="imageCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+            <div id="imageCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#imageCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                    <button type="button" data-bs-target="#imageCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                    <button type="button" data-bs-target="#imageCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+
+                </div>
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img src="~/images/C1.png" class="d-block w-100" alt="First Slide">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="/images/C2.png" class="d-block w-100" alt="Second Slide">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="/images/C3.png" class="d-block w-100" alt="Third Slide">
+                    </div>
+                </div>
+             
+            </div>
+
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</main>  
+
+ <div id="content">
 <h2>Score</h2>
 <table class="table">
     <thead>
@@ -36,6 +64,7 @@
         }
     </tbody>
 </table>
+ 
 <h2>Realized Games</h2>
 <table class="table">
     <thead>
@@ -64,3 +93,60 @@
         }
     </tbody>
 </table>
+</div>
+ 
+ 
+<div class="pdf-button-container">
+    <a href="#" class="pdf-download-link" onclick="printToPDF()">Download as PDF</a>
+</div>
+
+ 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.2/html2canvas.min.js"></script>
+<script>
+    function printToPDF() {
+        const { jsPDF } = window.jspdf;  
+        const doc = new jsPDF('p', 'mm', 'a4');  
+
+        // Title  
+        doc.setFontSize(20);
+        doc.text("LigaNOS Management System Report", doc.internal.pageSize.getWidth() / 2, 20, { align: 'center' });
+
+        // Subtitle 
+        doc.setFontSize(14);
+        doc.text("Scores and Match Results", doc.internal.pageSize.getWidth() / 2, 30, { align: 'center' });
+
+        
+        html2canvas(document.querySelector("#content")).then(canvas => {
+            const imgData = canvas.toDataURL("image/png");
+            const imgWidth = 190;  
+            const pageHeight = 285;  
+            const imgHeight = canvas.height * imgWidth / canvas.width;
+            let heightLeft = imgHeight;
+            let position = 40; 
+
+            doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+
+            while (heightLeft >= 0) {
+                position = heightLeft - imgHeight;
+                doc.addPage();
+                doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+            }
+
+            const today = new Date();
+            const day = today.getDate().toString().padStart(2, '0');
+            const month = (today.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based
+            const year = today.getFullYear();
+
+            
+            const fileName = `LigaNOS_GamesReport_${year}-${month}-${day}.pdf`;
+
+            // Save the PDF with the dynamic file name
+            doc.save(fileName);
+            
+        
+        });
+    }
+</script>

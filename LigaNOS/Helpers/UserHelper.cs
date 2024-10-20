@@ -78,5 +78,10 @@ namespace LigaNOS.Helpers
         {
             await _userManager.AddToRoleAsync(user, roleName);
         }
+
+        public async Task<bool> RoleExistsAsync(string roleName)
+        {
+            return await _roleManager.RoleExistsAsync(roleName);
+        }
     }
 }
