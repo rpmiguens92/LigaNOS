@@ -26,17 +26,17 @@ namespace LigaNOS.Data.Entities
         {
             await _context.Database.EnsureCreatedAsync();
 
-            // Verificar e criar roles se necessário
+            
             await EnsureRoleExistsAsync("Admin");
             await EnsureRoleExistsAsync("Emplo");
             await EnsureRoleExistsAsync("Club");
 
-            // Criar e atribuir usuários às roles
+           
             var userAdmin = await CreateUserAndAssignRoleAsync("miguens.rp@gmail.com", "Rita", "Miguens", "Admin", "123456");
             var userEmplo = await CreateUserAndAssignRoleAsync("miguel@cinel.pt", "Miguel", "Miguens", "Emplo", "123456");
             var userClub = await CreateUserAndAssignRoleAsync("maria@cinel.pt", "Maria", "Miguens", "Club", "123456");
 
-            // Adicionar clubes se não existirem
+            
             if (!_context.Clubs.Any())
             {
                 AddClub("Sport Lisboa e Benfica", "Jorge Jesus", "Estádio do Benfica", userAdmin);
@@ -53,7 +53,7 @@ namespace LigaNOS.Data.Entities
                 throw new InvalidOperationException("Not enough clubs to create matches.");
             }
 
-            // Adicionar jogadores se não existirem
+            
             if (!_context.Players.Any())
             {
                 foreach (var club in clubs)
@@ -63,7 +63,7 @@ namespace LigaNOS.Data.Entities
                 await _context.SaveChangesAsync();
             }
 
-            // Adicionar partidas se não existirem
+            
             if (!_context.Matches.Any())
             {
                 AddMatch(userAdmin);

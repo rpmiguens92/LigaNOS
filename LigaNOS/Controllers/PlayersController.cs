@@ -15,7 +15,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LigaNOS.Controllers
 {
-    [Authorize(Roles = " Emplo" )]
+    [Authorize(Roles = " Emplo")]
     public class PlayersController : Controller
     {
 
@@ -32,31 +32,32 @@ namespace LigaNOS.Controllers
             _userHelper = userHelper;
             _converterHelper = converterHelper;
             _blobHelper = blobHelper;
-             
+
         }
         // GET: PlayersController
         public IActionResult Index()
         {
             var players = _playerRepository.GetAll().Include(p => p.Clubs).OrderBy(p => p.Name).ToList();
- 
+
             return View(players);
         }
-            // GET: PlayersController/Details/5
-            public async Task<IActionResult> Details(int? id)
-            {
+        // GET: PlayersController/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
             if (id == null)
             {
-                return NotFound();
+                return new NotFoundViewModel("PlayerNotFound");
             }
 
             var player = await _playerRepository.GetByIdAsync(id.Value);
             if (player == null)
             {
-                return NotFound();
+                return new NotFoundViewModel("PlayerNotFound");
+            
             }
 
             return View(player);
-            }
+        }
 
         // GET: PlayersController/Create
         public IActionResult Create()
@@ -64,7 +65,7 @@ namespace LigaNOS.Controllers
             var clubs = _clubRepository.GetAll().ToList();
             clubs.Insert(0, new Club { Id = 0, Name = "-- No Club Selected --" });
 
-           
+
             ViewBag.Clubs = new SelectList(clubs, "Id", "Name");
             return View();
         }
@@ -100,14 +101,14 @@ namespace LigaNOS.Controllers
                 }
 
                 player.User = await _userHelper.GetUserByEmailAsync(User.Identity.Name);
- 
-                if (model.ClubId != 0)  
+
+                if (model.ClubId != 0)
                 {
                     player.ClubId = model.ClubId;
                 }
                 else
                 {
-                    player.ClubId = null;  
+                    player.ClubId = null;
                 }
 
 
@@ -129,10 +130,11 @@ namespace LigaNOS.Controllers
 
             if (player == null)
             {
-                return NotFound();
+                return new NotFoundViewModel("PlayerNotFound");
+            
             }
             var model = _converterHelper.ToPlayerViewModel(player);
-          
+
             var clubs = _clubRepository.GetAll().ToList();
             clubs.Insert(0, new Club { Id = 0, Name = "-- No Club Selected --" });
 
@@ -155,9 +157,10 @@ namespace LigaNOS.Controllers
                 try
                 {
                     var player = await _playerRepository.GetByIdAsync(model.Id);
-                    if (player == null) 
-                    { 
-                        return NotFound(); 
+                    if (player == null)
+                    {
+                        return new NotFoundViewModel("PlayerNotFound");
+                    
                     }
 
 
@@ -165,13 +168,13 @@ namespace LigaNOS.Controllers
                     {
 
                         player.ImageFileId = await _blobHelper.UploadBlobAsync(model.ImageFile, "players");
-                       
+
                     }
 
                     player.Name = model.Name;
                     player.DateOfBirth = model.DateOfBirth;
                     player.Position = model.Position;
- 
+
                     if (model.ClubId == 0)
                     {
                         player.ClubId = null;
@@ -188,8 +191,9 @@ namespace LigaNOS.Controllers
                 {
                     if (!await _playerRepository.ExistAsync(model.Id))
                     {
-                        return NotFound();
+                        return new NotFoundViewModel("PlayerNotFound");
                     }
+                
                     else
                     {
                         throw;
@@ -201,7 +205,7 @@ namespace LigaNOS.Controllers
             clubs.Insert(0, new Club { Id = 0, Name = "-- No Club Selected --" });
             ViewBag.Clubs = new SelectList(clubs, "Id", "Name", model.ClubId);
 
- 
+
             return View(model);
         }
 
@@ -210,12 +214,14 @@ namespace LigaNOS.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new NotFoundViewModel("PlayerNotFound");
+            
             }
             var player = await _playerRepository.GetByIdAsync(id.Value);
             if (player == null)
             {
-                return NotFound();
+                return new NotFoundViewModel("PlayerNotFound");
+            
             }
 
             return View(player);
@@ -229,10 +235,15 @@ namespace LigaNOS.Controllers
             var player = await _playerRepository.GetByIdAsync(id);
             if (player == null)
             {
-                return NotFound();
+                return new NotFoundViewModel("PlayerNotFound");
+            
             }
             await _playerRepository.DeleteAsync(player);
             return RedirectToAction(nameof(Index));
+        }
+        public IActionResult PlayerNotFound()
+        {
+            return View();
         }
     }
 }

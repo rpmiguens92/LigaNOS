@@ -52,7 +52,7 @@ namespace LigaNOS.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new NotFoundViewModel("MatchNotFound");
             }
 
             var match = await _matchRepository.GetAll()
@@ -62,7 +62,7 @@ namespace LigaNOS.Controllers
 
             if (match == null)
             {
-                return NotFound();
+                return new NotFoundViewModel("MatchNotFound");
             }
 
             return View(match);
@@ -136,7 +136,7 @@ namespace LigaNOS.Controllers
         {  
             if (id == null)
             {
-                return NotFound();
+                return new NotFoundViewModel("MatchNotFound");
             } 
 
             var match = await _matchRepository.GetAll()
@@ -146,7 +146,7 @@ namespace LigaNOS.Controllers
 
             if (match == null)
             {
-                return NotFound();
+                return new NotFoundViewModel("MatchNotFound");
             }
  
             if (match.HomeClub == null || match.AwayClub == null)
@@ -178,7 +178,7 @@ namespace LigaNOS.Controllers
         {
             if (id != model.Id)
             {
-                return NotFound();
+                return new NotFoundViewModel("MatchNotFound");
             }
 
             if (ModelState.IsValid)
@@ -193,7 +193,7 @@ namespace LigaNOS.Controllers
                     var match = await _matchRepository.GetByIdAsync(model.Id);
                     if (match == null)
                     {
-                        return NotFound();
+                        return new NotFoundViewModel("MatchNotFound");
                     }
 
                     match.HomeClub = await _clubRepository.GetByIdAsync(model.HomeClubId);
@@ -213,7 +213,7 @@ namespace LigaNOS.Controllers
                 {
                     if (!await _matchRepository.ExistAsync(model.Id))
                     {
-                        return NotFound();
+                        return new NotFoundViewModel("MatchNotFound");
                     }
                     else
                     {
@@ -232,7 +232,7 @@ namespace LigaNOS.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new NotFoundViewModel("MatchNotFound");
             }
             
 
@@ -243,7 +243,7 @@ namespace LigaNOS.Controllers
 
             if (match == null)
             {
-                return NotFound();
+                return new NotFoundViewModel("MatchNotFound");
             }
             return View(match);
         }
@@ -258,7 +258,7 @@ namespace LigaNOS.Controllers
 
             if (match == null)
             {
-                return NotFound();
+                return new NotFoundViewModel("MatchNotFound");
             }
             //delete only if the match is not played yet
             if (match.MatchDay.Date < DateTime.Now.Date)
@@ -268,6 +268,10 @@ namespace LigaNOS.Controllers
             }
             await _matchRepository.DeleteAsync(match);
             return RedirectToAction(nameof(Index));
+        }
+        public IActionResult MatchNotFound()
+        {
+            return View();
         }
     }
 }

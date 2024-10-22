@@ -18,7 +18,7 @@ namespace LigaNOS.Controllers
             _userHelper = userHelper;
         }
         // GET: AccountController
-      
+
         public ActionResult Login()
         {
             if (User.Identity.IsAuthenticated)
@@ -141,7 +141,7 @@ namespace LigaNOS.Controllers
             return View(model);
         }
 
-       [Authorize(Roles = "Admin, Club, Emplo ")]
+        [Authorize(Roles = "Admin, Club, Emplo ")]
         public IActionResult ChangePassword()
         {
             return View();

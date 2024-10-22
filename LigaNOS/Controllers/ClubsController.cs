@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace LigaNOS.Controllers
 {
-   
+
     public class ClubsController : Controller
     {
         private readonly IClubRepository _clubRepository;
@@ -30,7 +30,7 @@ namespace LigaNOS.Controllers
         }
 
         // GET: ClubsController
-        
+
         public IActionResult Index()
         {
             return View(_clubRepository.GetAll().OrderBy(c => c.Name));
@@ -42,7 +42,7 @@ namespace LigaNOS.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new NotFoundViewModel("ClubNotFound");
             }
 
             // var club = await _clubRepository.GetByIdAsync(id.Value);
@@ -53,7 +53,7 @@ namespace LigaNOS.Controllers
 
             if (club == null)
             {
-                return NotFound();
+                return new NotFoundViewModel("ClubNotFound");
             }
 
             return View(club);
@@ -78,7 +78,7 @@ namespace LigaNOS.Controllers
             if (existingClub != null)
             {
                 ModelState.AddModelError(string.Empty, "Club already registed.");
-                return View(model);  
+                return View(model);
             }
             if (ModelState.IsValid)
             {
@@ -90,14 +90,14 @@ namespace LigaNOS.Controllers
 
                 }
                 var club = _converterHelper.ToClub(model, imageId, true);
-                
-                if(!User.Identity.IsAuthenticated)
+
+                if (!User.Identity.IsAuthenticated)
                 {
                     return RedirectToAction("Login", "Account");
                 }
 
                 club.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
-               
+
 
                 await _clubRepository.CreateAsync(club);
                 return RedirectToAction(nameof(Index));
@@ -108,12 +108,12 @@ namespace LigaNOS.Controllers
         // GET: ClubsController/Edit/5
         [Authorize(Roles = "Admin ")]
         public async Task<IActionResult> Edit(int id)
-        { 
+        {
 
             var club = await _clubRepository.GetByIdAsync(id);
             if (club == null)
             {
-                return NotFound();
+                return new NotFoundViewModel("ClubNotFound");
             }
             var model = _converterHelper.ToClubViewModel(club);
             return View(model);
@@ -127,7 +127,7 @@ namespace LigaNOS.Controllers
         {
             if (id != model.Id)
             {
-                return NotFound();
+                return new NotFoundViewModel("ClubNotFound");
             }
 
             if (ModelState.IsValid)
@@ -142,7 +142,7 @@ namespace LigaNOS.Controllers
                     var club = await _clubRepository.GetByIdAsync(model.Id);
                     if (club == null)
                     {
-                        return NotFound();
+                        return new NotFoundViewModel("ClubNotFound");
                     }
                     //check image
                     if (model.ImageFile != null && model.ImageFile.Length > 0)
@@ -150,11 +150,11 @@ namespace LigaNOS.Controllers
                         club.ImageFileId = await _blobHelper.UploadBlobAsync(model.ImageFile, "clubs");
                     }
 
-                    
+
                     club.Name = model.Name;
                     club.Coach = model.Coach;
                     club.Stadium = model.Stadium;
-      
+
                     club.User = await _userHelper.GetUserByEmailAsync(User.Identity.Name);
 
                     await _clubRepository.UpdateAsync(club);
@@ -163,7 +163,7 @@ namespace LigaNOS.Controllers
                 {
                     if (!await _clubRepository.ExistAsync(model.Id))
                     {
-                        return NotFound();
+                        return new NotFoundViewModel("ClubNotFound");
                     }
                     else
                     {
@@ -178,34 +178,34 @@ namespace LigaNOS.Controllers
         // GET: ClubsController/Delete/5
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
             {
-                if (id == null)
-                {
-                    return NotFound();
-                }
-
-                var club = await _clubRepository.GetByIdAsync(id.Value);
-
-                if (club == null)
-                {
-                    return NotFound();
-                }
-
-                return View(club);
+                return new NotFoundViewModel("ClubNotFound");
             }
 
-            // POST: ClubsController/Delete/5
-            [HttpPost, ActionName("Delete")]
-            [ValidateAntiForgeryToken]
-            public async Task<IActionResult> DeleteConfirmed(int id)
+            var club = await _clubRepository.GetByIdAsync(id.Value);
+
+            if (club == null)
             {
+                return new NotFoundViewModel("ClubNotFound");
+            }
+
+            return View(club);
+        }
+
+        // POST: ClubsController/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
             var club = await _clubRepository.GetByIdAsync(id);
             if (club == null)
             {
-                return NotFound();
+                return new NotFoundViewModel("ClubNotFound");
             }
 
-            var hasMatches = await _clubRepository.HasMatchesAsync(id);  
+            var hasMatches = await _clubRepository.HasMatchesAsync(id);
 
             if (hasMatches)
             {
@@ -216,7 +216,9 @@ namespace LigaNOS.Controllers
             await _clubRepository.DeleteAsync(club);
             return RedirectToAction(nameof(Index));
         }
+        public IActionResult ClubNotFound()
+        {
+            return View();
+        }
     }
 }
-
-
