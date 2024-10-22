@@ -17,5 +17,14 @@ namespace LigaNOS.Helpers
         Task<bool> IsUserInRoleAsync(User user, string roleName);
         Task AddUserToRoleAsync(User user, string roleName);
         Task<bool> RoleExistsAsync(string roleName);
+        Task<SignInResult> ValidatePasswordAsync(User user, string password); 
+        Task<string> GenerateEmailConfirmationTokenAsync(User user);
+
+        Task<IdentityResult> ConfirmEmailAsync(User user, string token);
+
+        Task<User> GetUserByIdAsync(string userId);
+
+        Task<string> GeneratePasswordResetTokenAsync(User user);
+        Task<IdentityResult> ResetPasswordAsync(User user, string token, string password);
     }
 }
