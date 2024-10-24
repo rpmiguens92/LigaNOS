@@ -12,7 +12,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
- 
+using LigaNOS.Data.Repositories;
+
 
 namespace LigaNOS.Controllers
 {
@@ -21,13 +22,14 @@ namespace LigaNOS.Controllers
         private readonly IUserHelper _userHelper;
         private readonly IConfiguration _configuration;
         private readonly IMailHelper _mailHelper;
+        private readonly IEmployeeRepository _employeeRepository;
 
-
-        public AccountController(IUserHelper userHelper, IConfiguration configuration, IMailHelper mailHelper)
+        public AccountController(IUserHelper userHelper, IConfiguration configuration, IMailHelper mailHelper, IEmployeeRepository employeeRepository)
         {
             _userHelper = userHelper;
             _configuration = configuration;
             _mailHelper = mailHelper;
+            _employeeRepository = employeeRepository;
         }
         // GET: AccountController
 
@@ -113,6 +115,7 @@ namespace LigaNOS.Controllers
             return RedirectToAction("Index", "Home");
 
         }
+
         [Authorize(Roles = "Admin")]
         public IActionResult Register()
         {
@@ -157,7 +160,8 @@ namespace LigaNOS.Controllers
             return View(model);
         }
 
-        [Authorize(Roles = "Admin, Club, Emplo")]
+
+       // [Authorize(Roles = "Admin, Club, Emplo")]
         public async Task<IActionResult> ChangeUser()
         {
             var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
@@ -198,7 +202,7 @@ namespace LigaNOS.Controllers
             return View(model);
         }
 
-        [Authorize(Roles = "Admin, Club, Emplo ")]
+        //[Authorize(Roles = "Admin, Club, Emplo ")]
         public IActionResult ChangePassword()
         {
             return View();
@@ -302,6 +306,18 @@ namespace LigaNOS.Controllers
 
             this.ViewBag.Message = "User not found.";
             return View(model);
+        }
+        public IActionResult TestEmail()
+        {
+            var response = _mailHelper.SendEmail("miguens.rp@gmail.com", "Test Subject", "<h1>This is a test</h1>");
+            if (response.IsSuccess)
+            {
+                return Content("Email sent successfully.");
+            }
+            else
+            {
+                return Content($"Error sending email: {response.Message}");
+            }
         }
     }
 }

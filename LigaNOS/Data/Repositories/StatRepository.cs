@@ -12,9 +12,15 @@ namespace LigaNOS.Data.Repositories
         {
             _context = context;
         }
-        public IQueryable GetAllWithUsers()
+        public IQueryable<Stat> GetAllWithUsers()
         {
-            return _context.Stats.Include(c => c.User);
+            return _context.Stats.Include(c => c.User); 
+        }
+
+
+        public IQueryable<Stat> GetAll()
+        {
+            return _context.Stats;
         }
     }
 } 

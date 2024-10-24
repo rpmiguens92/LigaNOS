@@ -34,8 +34,10 @@
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin </a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="User" asp-action="Index">Users</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="Role" asp-action="Index">Roles</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Employees" asp-action="Index">Employees</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="RegisterRole">New Role </a></li>
+                                    <li><a asp-controller="Contacts" asp-action="Index">Intern Contact Form</a></li>
+
                                 </ul>
                             </li>
                         }
@@ -96,3 +98,4 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 
+ 

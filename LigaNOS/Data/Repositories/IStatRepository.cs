@@ -5,6 +5,9 @@ namespace LigaNOS.Data.Repositories
 {
     public interface IStatRepository : IGenericRepository<Stat>
     {
-        public IQueryable GetAllWithUsers();
+        public IQueryable<Stat> GetAll();
+ 
+
     }
 }
+

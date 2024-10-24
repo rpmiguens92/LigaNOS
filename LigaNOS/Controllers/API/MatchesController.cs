@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LigaNOS.Controllers.API
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class MatchesController : Controller
     {
         private readonly IMatchRepository _matchRepository;

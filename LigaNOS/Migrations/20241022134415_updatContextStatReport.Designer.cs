@@ -4,14 +4,16 @@ using LigaNOS.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace LigaNOS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241022134415_updatContextStatReport")]
+    partial class updatContextStatReport
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,44 +66,6 @@ namespace LigaNOS.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Clubs");
-                });
-
-            modelBuilder.Entity("LigaNOS.Data.Entities.Employee", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("ImageFileId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Phone")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Role")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Employees");
                 });
 
             modelBuilder.Entity("LigaNOS.Data.Entities.Match", b =>
@@ -231,6 +195,23 @@ namespace LigaNOS.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Stats");
+                });
+
+            modelBuilder.Entity("LigaNOS.Data.Entities.StatReport", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("StatId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StatId");
+
+                    b.ToTable("StatReports");
                 });
 
             modelBuilder.Entity("LigaNOS.Data.Entities.User", b =>
@@ -448,15 +429,6 @@ namespace LigaNOS.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("LigaNOS.Data.Entities.Employee", b =>
-                {
-                    b.HasOne("LigaNOS.Data.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("LigaNOS.Data.Entities.Match", b =>
                 {
                     b.HasOne("LigaNOS.Data.Entities.Club", "AwayClub")
@@ -537,6 +509,15 @@ namespace LigaNOS.Migrations
                     b.Navigation("Match");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("LigaNOS.Data.Entities.StatReport", b =>
+                {
+                    b.HasOne("LigaNOS.Data.Entities.Stat", "Stat")
+                        .WithMany()
+                        .HasForeignKey("StatId");
+
+                    b.Navigation("Stat");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

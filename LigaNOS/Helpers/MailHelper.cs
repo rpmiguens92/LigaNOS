@@ -54,8 +54,6 @@ namespace LigaNOS.Helpers
                     IsSuccess = false,
                     Message = ex.ToString(),
 
-
-
                 };
             }
 

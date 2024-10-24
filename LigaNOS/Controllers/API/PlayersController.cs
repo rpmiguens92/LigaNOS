@@ -5,9 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LigaNOS.Controllers.API
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+     
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class PlayersController : Controller
     {
         private readonly IPlayerRepository _playerRepository;

@@ -12,6 +12,8 @@ namespace LigaNOS.Data
         public DbSet<Club> Clubs { get; set; }
         public DbSet<Match> Matches { get; set; }
         public DbSet<Stat> Stats { get; set; }
+        public DbSet<Employee> Employees { get; set; }
+
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {

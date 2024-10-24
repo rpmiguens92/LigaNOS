@@ -19,6 +19,7 @@ namespace LigaNOS.Controllers
         private readonly IClubRepository _clubRepository;
         private readonly IUserHelper _userHelper;
         private readonly IConverterHelper _converterHelper;
+        private readonly IBlobHelper _blobHelper; 
         private readonly DataContext _context;
         public StatsController(IStatRepository statRepository, IMatchRepository matchRepository, IClubRepository clubRepository, IUserHelper userHelper, IConverterHelper converterHelper, IBlobHelper blobHelper, DataContext dataContext)
         {
@@ -27,6 +28,8 @@ namespace LigaNOS.Controllers
             _clubRepository = clubRepository;
             _userHelper = userHelper;
             _converterHelper = converterHelper;
+            _blobHelper = blobHelper;
+             
             _context = dataContext;
         }
         // GET: StatsController

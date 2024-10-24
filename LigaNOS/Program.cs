@@ -37,5 +37,6 @@ namespace LigaNOS
                 {
                     webBuilder.UseStartup<Startup>();
                 });
+              
     }
 }

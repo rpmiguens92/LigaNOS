@@ -8,6 +8,7 @@ using static System.Reflection.Metadata.BlobBuilder;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using LigaNOS.Controllers;
 using Microsoft.AspNetCore.Hosting.Server;
+using System.ComponentModel;
 
 namespace LigaNOS.Data.Entities
 {
@@ -59,6 +60,7 @@ namespace LigaNOS.Data.Entities
                 foreach (var club in clubs)
                 {
                     AddPlayer(club, userAdmin);
+                    AddPlayer(club, userAdmin);
                 }
                 await _context.SaveChangesAsync();
             }
@@ -69,6 +71,53 @@ namespace LigaNOS.Data.Entities
                 AddMatch(userAdmin);
                 await _context.SaveChangesAsync();
             }
+
+            if(!_context.Employees.Any())
+            {
+                AddEmployee("Miguel Miguens", userEmplo);
+                AddEmployee("Maria Miguens", userEmplo);
+                AddEmployee("Francisco Miguens", userEmplo);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        private void AddEmployee(string name, User userEmplo)
+        {
+            _context.Employees.Add(new Employee
+            {
+                Name = name,
+                Address = GenerateRandomAddress(),
+                Phone = GenerateRandomNumbers(9),
+                Email = name.Replace(" ", "_") + "@cinel.pt",
+                Role = GenerateRandomRole(),
+                User = userEmplo,
+            });
+        }
+
+        private string GenerateRandomAddress()
+        {
+            string[] city = { "Lisboa", "Coimbra", "Aveiro" };
+            string[] country = { "Portugal" };
+
+            return$"{city[_random.Next(city.Length)]}, {country[_random.Next(country.Length)]}";
+
+        }
+
+        private string GenerateRandomRole()
+        {
+            string[] names = { "Admin", "Clubs", "Emplo" };
+            string roleName = names[_random.Next(names.Length)];
+
+            return roleName;
+        }
+        private string GenerateRandomNumbers(int value)
+        {
+            string phoneNumber = "";
+            for (int i = 0; i < value; i++)
+            {
+                phoneNumber += _random.Next(10).ToString();
+            }
+            return phoneNumber;
         }
 
         private async Task EnsureRoleExistsAsync(string roleName)
