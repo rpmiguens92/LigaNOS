@@ -5,7 +5,7 @@
 
 <h1>Delete</h1>
 
-<div class="col-md-8">
+<div>
     <dl class="row">
         <dt class="col-sm-3">
             @Html.DisplayNameFor(model => model.Name)
@@ -42,11 +42,11 @@
 <div class="col-md-4">
     <img src="@Url.Content(Model.ImageFullPath)" alt="Image" style="width:300px;height:450px;max-width:100%;height:auto" />
 </div>
-    </div>
-<br />
+ 
+ 
 <form asp-action="Delete">
     <input type="hidden" asp-for="Id" />
     <button type="submit" style="margin-right: 16px; margin-left: 10%;" class="button button-contactForm boxed-btn"><i class="fa fa-trash"></i>Delete</button>
     <a asp-action="Index" class="button button-contactForm boxed-btn"><i class="fa fa-chevron-left"></i>Back to List</a>
 </form>
-</div>
+ 

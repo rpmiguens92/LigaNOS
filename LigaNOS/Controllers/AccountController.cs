@@ -20,20 +20,30 @@ namespace LigaNOS.Controllers
     public class AccountController : Controller
     {
         private readonly IUserHelper _userHelper;
-        private readonly IConfiguration _configuration;
         private readonly IMailHelper _mailHelper;
-        private readonly IEmployeeRepository _employeeRepository;
+        private readonly IConfiguration _configuration;
+       
+        private readonly IUserRepository _userRepository;
+        private readonly IBlobHelper _blobHelper;
 
-        public AccountController(IUserHelper userHelper, IConfiguration configuration, IMailHelper mailHelper, IEmployeeRepository employeeRepository)
+        public AccountController(
+            IUserHelper userHelper,
+            IMailHelper mailHelper,
+            IConfiguration configuration,
+
+            IUserRepository userRepository,
+            IBlobHelper blobHelper)
         {
             _userHelper = userHelper;
-            _configuration = configuration;
             _mailHelper = mailHelper;
-            _employeeRepository = employeeRepository;
-        }
-        // GET: AccountController
+            _configuration = configuration;
 
-        public ActionResult Login()
+            _userRepository = userRepository;
+            _blobHelper = blobHelper;
+        }
+            // GET: AccountController
+
+            public ActionResult Login()
         {
             if (User.Identity.IsAuthenticated)
             {
@@ -47,24 +57,26 @@ namespace LigaNOS.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _userHelper.LoginAsync(model);
-                if (result.Succeeded)
+                try
                 {
-                    if (this.Request.Query.Keys.Contains("ReturnUrl"))
+                    var result = await _userHelper.LoginAsync(model);
+                    if (result.Succeeded)
                     {
-                        return Redirect(this.Request.Query["ReturnUrl"].First());
+                        return RedirectToAction("Index", "Home");
                     }
-                    else
-                    {
-                        return this.RedirectToAction("Index", "Home");
-                    }
+                }
+                catch (InvalidOperationException ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
                 }
             }
             this.ModelState.AddModelError(string.Empty, "Failed to login");
             return View(model);
         }
+        
 
-        [HttpPost]
+
+            [HttpPost]
         public async Task<IActionResult> CreateToken([FromBody] LoginViewModel model)
         {
             if (this.ModelState.IsValid)
@@ -125,11 +137,8 @@ namespace LigaNOS.Controllers
         public async Task<IActionResult> Register(RegisterUserViewModel model)
         {
             if (ModelState.IsValid)
-            {
-                var user = await _userHelper.GetUserByEmailAsync(model.Username);
-                if (user == null)
-                {
-                    user = new User
+            { 
+                   var  user = new User
                     {
                         FirstName = model.FirstName,
                         LastName = model.LastName,
@@ -138,30 +147,58 @@ namespace LigaNOS.Controllers
                     };
 
                     var result = await _userHelper.AddUserAsync(user, model.Password);
-                    if (result != IdentityResult.Success)
-                    {
-                        ModelState.AddModelError(string.Empty, "The user couldn't be created.");
-                        return View(model);
-                    }
-                    var loginViewModel = new LoginViewModel
-                    {
-                        Password = model.Password,
-                        RememberMe = false,
-                        Username = model.Username,
-                    };
-                    var result2 = await _userHelper.LoginAsync(loginViewModel);
-                    if (result2.Succeeded)
-                    {
-                        return RedirectToAction("Index", "Home");
-                    }
-                    ModelState.AddModelError(string.Empty, "The user couldn't be logged.");
+                if (result.Succeeded)
+                {
+                    //token
+                    var token = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
+
+                    //link
+                    var confirmationLink = Url.Action(
+                        "ConfirmEmail",
+                        "Account",
+                        new { userId = user.Id, token },
+                        Request.Scheme);
+
+                    // Email
+                    //_mailHelper.SendEmail(user.Email, "E-mail confirmation", $"Click on link below to confirm your e-mail. {confirmationLink}");
+
+                    
+                    ViewBag.Message = "Please, confirm your email.";
+                    return View("Register");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Error!");
                 }
             }
             return View(model);
         }
 
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            if (userId == null || token == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
 
-       // [Authorize(Roles = "Admin, Club, Emplo")]
+            var user = await _userHelper.GetUserByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var result = await _userHelper.ConfirmEmailAsync(user, token);
+            if (result.Succeeded)
+            {
+                ViewBag.Message = "Email confirmation succeeded!";
+                return View("ConfirmEmail");
+            }
+
+            ViewBag.Message = "Email confirmation not succeeded. Contact our platform support";
+            return View("Error");
+        }
+
+        // [Authorize(Roles = "Admin, Club, Emplo")]
         public async Task<IActionResult> ChangeUser()
         {
             var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
@@ -309,7 +346,7 @@ namespace LigaNOS.Controllers
         }
         public IActionResult TestEmail()
         {
-            var response = _mailHelper.SendEmail("miguens.rp@gmail.com", "Test Subject", "<h1>This is a test</h1>");
+            var response = _mailHelper.SendEmail("miguens.rpm@gmail.com", "Test Subject", "<h1>This is a test</h1>");
             if (response.IsSuccess)
             {
                 return Content("Email sent successfully.");

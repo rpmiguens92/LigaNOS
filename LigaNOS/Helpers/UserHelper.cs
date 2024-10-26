@@ -41,11 +41,31 @@ namespace LigaNOS.Helpers
         }
         public async Task<SignInResult> LoginAsync(LoginViewModel model)
         {
-            return await _signInManager.PasswordSignInAsync(
-               model.Username,
-               model.Password,
-               model.RememberMe,
-               false);
+           
+
+            var result = await _signInManager.PasswordSignInAsync(
+       model.Username,
+       model.Password,
+       model.RememberMe,
+       lockoutOnFailure: false);
+
+            if (result.Succeeded)
+            {
+                return result;
+            }
+            else if (result.IsLockedOut)
+            {
+                throw new InvalidOperationException("User blocked.");
+            }
+            else if (result.IsNotAllowed)
+            {
+                throw new InvalidOperationException("You need to validate your e-mail.");
+            }
+            else
+            {
+                throw new InvalidOperationException("Check details");
+            }
+            return result;
         }
         public async Task<IdentityResult> UpdateUserAsync(User user)
         {

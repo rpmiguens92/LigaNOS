@@ -131,7 +131,7 @@ namespace LigaNOS.Controllers
         }
 
         // GET: MatchesController/Edit/5
-        [Authorize(Roles = "Emplo")]
+ 
         public async Task<IActionResult> Edit(int? id)
         {  
             if (id == null)

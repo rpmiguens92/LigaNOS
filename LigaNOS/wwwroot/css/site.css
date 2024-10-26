@@ -57,11 +57,13 @@ button.accept-policy {
 html {
     position: relative;
     min-height: 100%;
+    overflow: auto;
 }
 
 body {
     /* Margin bottom by footer height */
     margin-bottom: 50px;
+    overflow: auto
 }
 
 .footer {
@@ -92,8 +94,7 @@ body {
   
     .background-image::before {
         content: "";
-        
-      
+ 
     }
 
     .background-image h1, .background-image p {
@@ -163,12 +164,13 @@ body {
     text-decoration: none;
 }
 
-/*todo o site*/
+/*site*/
 body {
+    overflow: auto !important;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #FAF09B;
 }
-
+ 
 /*pdf button*/
  
 .pdf-button-container {
@@ -201,7 +203,7 @@ body,
 html {
     width: 100%;
     height: 100%;
-    overflow: hidden;
+    overflow: auto;
 }
 
 #svgContainer {

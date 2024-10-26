@@ -13,6 +13,7 @@ namespace LigaNOS.Data
         public DbSet<Match> Matches { get; set; }
         public DbSet<Stat> Stats { get; set; }
         public DbSet<Employee> Employees { get; set; }
+        public DbSet<Contact> Contacts { get; set; }
 
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)

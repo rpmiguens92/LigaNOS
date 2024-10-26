@@ -34,8 +34,8 @@ namespace LigaNOS.Data.Entities
 
            
             var userAdmin = await CreateUserAndAssignRoleAsync("miguens.rp@gmail.com", "Rita", "Miguens", "Admin", "123456");
-            var userEmplo = await CreateUserAndAssignRoleAsync("miguel@cinel.pt", "Miguel", "Miguens", "Emplo", "123456");
-            var userClub = await CreateUserAndAssignRoleAsync("maria@cinel.pt", "Maria", "Miguens", "Club", "123456");
+            var userEmplo = await CreateUserAndAssignRoleAsync("miguel@yopmail.com", "Miguel", "Miguens", "Emplo", "123456");
+            var userClub = await CreateUserAndAssignRoleAsync("maria@yopmail.com", "Maria", "Miguens", "Club", "123456");
 
             
             if (!_context.Clubs.Any())

@@ -35,7 +35,9 @@ namespace LigaNOS.Helpers
             {
                 HtmlBody = body,
             };
+
             message.Body = bodybuilder.ToMessageBody();
+
             try
             {
                 using (var client = new SmtpClient())
@@ -48,12 +50,10 @@ namespace LigaNOS.Helpers
             }
             catch (Exception ex)
             {
-
                 return new Response
                 {
                     IsSuccess = false,
-                    Message = ex.ToString(),
-
+                    Message = ex.ToString()
                 };
             }
 

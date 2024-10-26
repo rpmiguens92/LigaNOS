@@ -11,7 +11,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using MimeKit;
 using System.Text;
+using Vereyon.Web;
 
 
 namespace LigaNOS
@@ -31,7 +33,7 @@ namespace LigaNOS
             services.AddIdentity<User, IdentityRole>(cfg =>
             {
                 cfg.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultAuthenticatorProvider;
-                cfg.SignIn.RequireConfirmedEmail = true; //temporario
+                cfg.SignIn.RequireConfirmedEmail = false; 
                 cfg.User.RequireUniqueEmail = true;
                 cfg.Password.RequireDigit = false;
                 cfg.Password.RequiredUniqueChars = 0;
@@ -72,8 +74,11 @@ namespace LigaNOS
             services.AddScoped<IMatchRepository, MatchRepository>();
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
             services.AddScoped<IStatRepository, StatRepository>();
-           
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUserHelper, UserHelper>();
+
             services.AddScoped<IMatchGenerator, MatchGenerator>();
+            services.AddFlashMessage();
 
 
             services.AddControllersWithViews();
@@ -87,11 +92,12 @@ namespace LigaNOS
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Seed seed)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                seed.SeedAsync().Wait();
             }
             else
             {

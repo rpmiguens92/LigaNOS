@@ -1,83 +1,66 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using LigaNOS.Data;
+using LigaNOS.Data.Entities;
+using LigaNOS.Helpers;
+using LigaNOS.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+using Vereyon.Web;
 
 namespace LigaNOS.Controllers
 {
-    public class ContactsController : Controller
-    {
+    public class ContactsController : Controller 
+    { 
+
+    private readonly IMailHelper _mailHelper;
+    private readonly IFlashMessage _flashMessage;
+    private readonly DataContext _context;
+        public ContactsController(IMailHelper mailHelper,
+            IFlashMessage flashMessage,
+            DataContext context)
+        {
+            _mailHelper = mailHelper;
+            _flashMessage = flashMessage;
+            _context = context;
+        }
         // GET: ContactsController
         public ActionResult Index()
         {
-            return View();
+
+            return View(new ContactViewModel());
         }
 
-        // GET: ContactsController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
 
-        // GET: ContactsController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: ContactsController/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<IActionResult> SendMail(ContactViewModel model)
         {
-            try
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+                Response response = _mailHelper.SendEmail("ritapereiramiguens@gmail.com", model.Subject, model.Message);
 
-        // GET: ContactsController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
+            
+                var contact = new Contact
+                {
+                    Name = model.Name,
+                    Email = model.Email,
+                    Subject = model.Subject,
+                    Message = model.Message
+                };
 
-        // POST: ContactsController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+                _context.Contacts.Add(contact);
+                await _context.SaveChangesAsync();
 
-        // GET: ContactsController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: ContactsController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
+                if (response.IsSuccess)
+                {
+                    _flashMessage.Confirmation("Message sent!");
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    _flashMessage.Danger("Error! Message not sent.");
+                }
             }
-            catch
-            {
-                return View();
-            }
+            return View("Index", model);
         }
     }
 }
