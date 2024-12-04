@@ -32,7 +32,7 @@
 <br/>
 <form>
     <div class="form-group">
-        <input type="text" name="searchstring" value="@ViewData["CurrentFilter"]" class="form-control" placeholder="Search by Club Name, Points, Wins, etc." onkeyup="searchStats()" />
+        <input type="text" name="searchstring" value="@ViewData["CurrentFilter"]" class="form-control" placeholder="Search by Club Name." onkeyup="searchStats()" />
     </div>
 </form>
 
@@ -59,7 +59,7 @@
                 
                 <td style="display: flex; align-items: center;">
                     
-                    <img src="@club.ClubSymbol" alt="@club.ClubName" style="width: 20px; height: 20px; margin-right: 10px;" />
+                    <img src="@club.ImageFileId" alt="@club.ClubName" style="width: 20px; height: 20px; margin-right: 10px;" />
                     <span>@club.ClubName</span>
                 </td>
                 <td>@club.Points</td>

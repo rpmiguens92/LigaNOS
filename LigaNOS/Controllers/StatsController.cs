@@ -130,7 +130,7 @@ namespace LigaNOS.Controllers
                     Wins = wins,
                     Losses = losses,
                     Draws = draws,
-                    ClubSymbol = club.ImageFileId
+                    ImageFileId = club.ImageFileId
                 });
             }
             var model = new StatViewModel
@@ -186,7 +186,7 @@ namespace LigaNOS.Controllers
                     Wins = wins,
                     Losses = losses,
                     Draws = draws,
-                    ClubSymbol = club.ImageFileId
+                    ImageFileId = club.ImageFileId
                 };
             }).ToList();
 
