@@ -13,6 +13,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using LigaNOS.Data.Repositories;
+ 
 
 
 namespace LigaNOS.Controllers
@@ -22,7 +23,7 @@ namespace LigaNOS.Controllers
         private readonly IUserHelper _userHelper;
         private readonly IMailHelper _mailHelper;
         private readonly IConfiguration _configuration;
-       
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IUserRepository _userRepository;
         private readonly IBlobHelper _blobHelper;
 
@@ -30,20 +31,20 @@ namespace LigaNOS.Controllers
             IUserHelper userHelper,
             IMailHelper mailHelper,
             IConfiguration configuration,
-
+            RoleManager<IdentityRole> roleManager,
             IUserRepository userRepository,
             IBlobHelper blobHelper)
         {
             _userHelper = userHelper;
             _mailHelper = mailHelper;
             _configuration = configuration;
-
+            _roleManager = roleManager;
             _userRepository = userRepository;
             _blobHelper = blobHelper;
         }
-            // GET: AccountController
+        // GET: AccountController
 
-            public ActionResult Login()
+        public ActionResult Login()
         {
             if (User.Identity.IsAuthenticated)
             {
@@ -173,6 +174,7 @@ namespace LigaNOS.Controllers
             }
             return View(model);
         }
+
 
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
@@ -355,6 +357,41 @@ namespace LigaNOS.Controllers
             {
                 return Content($"Error sending email: {response.Message}");
             }
+        }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ManageRoles()
+        {
+            var roles = _roleManager.Roles.Select(r => r.Name).ToList();
+            return View(roles); // Passa a lista de roles para a View
+        }
+        [Authorize(Roles = "Admin")]
+        public IActionResult CreateRole()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CreateRole(string roleName)
+        {
+            if (string.IsNullOrEmpty(roleName))
+            {
+                ModelState.AddModelError(string.Empty, "Role name cannot be empty.");
+                return View();
+            }
+
+            try
+            {
+                await _userHelper.CheckRoleAsync(roleName);
+                return RedirectToAction(nameof(ManageRoles));
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"Error creating role: {ex.Message}");
+            }
+
+            return View();
         }
     }
 }

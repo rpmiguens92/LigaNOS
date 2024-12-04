@@ -14,6 +14,8 @@ namespace LigaNOS.Data
         public DbSet<Stat> Stats { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Contact> Contacts { get; set; }
+       
+       
 
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
@@ -24,7 +26,13 @@ namespace LigaNOS.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
- 
+
+            modelBuilder.Entity<Employee>()
+                .HasOne(e => e.Role)
+                .WithMany()  
+                .HasForeignKey(e => e.RoleId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<Match>()
                 .HasOne(m => m.HomeClub)
                 .WithMany(c => c.HomeMatches)

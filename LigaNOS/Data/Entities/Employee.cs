@@ -1,6 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿
+using System.ComponentModel.DataAnnotations;
 using System;
 using System.Collections;
+using Microsoft.AspNetCore.Identity;
 
 namespace LigaNOS.Data.Entities
 {
@@ -23,7 +25,10 @@ namespace LigaNOS.Data.Entities
         [Required]
         public string Email { get; set; }
 
-        public string Role { get; set; }
+        [Required]
+        public string RoleId { get; set; }
+        public IdentityRole Role { get; set; }
+
 
         public User User { get; set; }
 

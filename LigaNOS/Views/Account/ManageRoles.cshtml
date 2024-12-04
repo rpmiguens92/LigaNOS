@@ -1,0 +1,20 @@
+﻿@model List<string>
+
+<h2>Manage Roles</h2>
+<a asp-action="CreateRole" class="btn btn-primary">Create New Role</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Role Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var role in Model)
+        {
+            <tr>
+                <td>@role</td>
+            </tr>
+        }
+    </tbody>
+</table>

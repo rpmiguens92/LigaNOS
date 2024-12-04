@@ -10,7 +10,7 @@ namespace LigaNOS.Controllers.API
     
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+   // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ClubsController : Controller
     {
         private readonly IClubRepository _clubRepository;
@@ -19,7 +19,7 @@ namespace LigaNOS.Controllers.API
         {
             _clubRepository = clubRepository;
         }
-        [HttpGet]
+        [HttpGet("Clubs")]
         public IActionResult GetClubs()
         {
             return Ok(_clubRepository.GetAllWithUsers());

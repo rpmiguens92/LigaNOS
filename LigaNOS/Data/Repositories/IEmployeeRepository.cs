@@ -9,7 +9,7 @@ namespace LigaNOS.Data.Repositories
 {
     public interface IEmployeeRepository : IGenericRepository<Employee>
     {
-        public IQueryable GetAllWithUsers();
+        public IQueryable<Employee> GetAllWithUsers();
 
         IEnumerable<SelectListItem> GetComboEmployess();
 

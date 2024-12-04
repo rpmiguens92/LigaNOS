@@ -17,15 +17,19 @@ namespace LigaNOS.Data.Entities
         private readonly DataContext _context;
         private readonly IUserHelper _userHelper;
         private Random _random;
-        public Seed(DataContext context, IUserHelper userHelper)
+        private readonly RoleManager<IdentityRole> _roleManager;
+        public Seed(DataContext context, IUserHelper userHelper, RoleManager<IdentityRole> roleManager)
         {
             _context = context;
             _userHelper = userHelper;
             _random = new Random();
+            _roleManager = roleManager;
         }
         public async Task SeedAsync()
         {
             await _context.Database.EnsureCreatedAsync();
+
+
 
             
             await EnsureRoleExistsAsync("Admin");
@@ -83,13 +87,18 @@ namespace LigaNOS.Data.Entities
 
         private void AddEmployee(string name, User userEmplo)
         {
+            var roleId = _context.Roles.FirstOrDefault(r => r.Name == "Emplo")?.Id;
+            if (string.IsNullOrEmpty(roleId))
+            {
+                throw new InvalidOperationException("Role 'Emplo' not found.");
+            }
             _context.Employees.Add(new Employee
             {
                 Name = name,
                 Address = GenerateRandomAddress(),
                 Phone = GenerateRandomNumbers(9),
                 Email = name.Replace(" ", "_") + "@cinel.pt",
-                Role = GenerateRandomRole(),
+                RoleId = GenerateRandomRole(),
                 User = userEmplo,
             });
         }
@@ -105,10 +114,13 @@ namespace LigaNOS.Data.Entities
 
         private string GenerateRandomRole()
         {
-            string[] names = { "Admin", "Clubs", "Emplo" };
-            string roleName = names[_random.Next(names.Length)];
-
-            return roleName;
+            var roles = _context.Roles.ToList();
+            if (!roles.Any())
+            {
+                throw new InvalidOperationException("No roles available in the database.");
+            }
+            var randomRole = roles[_random.Next(roles.Count)];
+            return randomRole.Id;  
         }
         private string GenerateRandomNumbers(int value)
         {
@@ -122,10 +134,24 @@ namespace LigaNOS.Data.Entities
 
         private async Task EnsureRoleExistsAsync(string roleName)
         {
-            var roleExists = await _userHelper.RoleExistsAsync(roleName);
-            if (!roleExists)
+            if (!await _roleManager.RoleExistsAsync(roleName))
             {
-                await _userHelper.CheckRoleAsync(roleName);
+                var role = new IdentityRole
+                {
+                    Name = roleName,
+                    NormalizedName = roleName.ToUpper() // Adiciona o NormalizedName
+                };
+
+                var result = await _roleManager.CreateAsync(role);
+                if (!result.Succeeded)
+                {
+                    throw new InvalidOperationException($"Failed to create role: {roleName}");
+                }
+                //var result = await _roleManager.CreateAsync(new IdentityRole(roleName));
+                //if (!result.Succeeded)
+                //{
+                //    throw new InvalidOperationException($"Failed to create role: {roleName}");
+                //}
             }
         }
 

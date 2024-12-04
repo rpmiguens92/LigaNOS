@@ -30,45 +30,83 @@ namespace LigaNOS.Data.Repositories
 
         public async Task AddRoleToEmployeeAsync(EmployeeViewModel model, string userName)
         {
-            Guid imageId = Guid.Empty;
+            //Guid imageId = Guid.Empty;
 
+            //if (model.ImageFile != null && model.ImageFile.Length > 0)
+            //{
+            //    imageId = await _blobHelper.UploadBlobAsync(model.ImageFile, "employees");
+
+            //}
+            //var vet = _converterHelper.ToEmployee(model, imageId, true);
+            //var user = await _userHelper.GetUserByEmailAsync(userName);
+            //if (user == null)
+            //{
+            //    return;
+
+            //}
+            //var employeeIndex = await _context.Employees
+            //    .Where(v => v.User == user)
+            //    .FirstOrDefaultAsync();
+
+            //employeeIndex = new EmployeeViewModel
+            //{
+            //    ImageFileId = imageId,
+            //    Id = model.Id,
+            //    Name = model.Name,
+            //    Address = model.Address,
+            //    Phone = model.Phone,
+            //    Email = model.Email,
+            //    RoleId = model.RoleId,
+            //    User = user,
+
+            //};
+            //_context.Employees.Add(employeeIndex);
+
+            //await _context.SaveChangesAsync();
+           
+            if (string.IsNullOrEmpty(model.Email))
+            {
+                throw new ArgumentException("Email cannot be null or empty");
+            }
+
+        
+            Guid imageId = Guid.Empty;
             if (model.ImageFile != null && model.ImageFile.Length > 0)
             {
                 imageId = await _blobHelper.UploadBlobAsync(model.ImageFile, "employees");
-
             }
-            var vet = _converterHelper.ToEmployee(model, imageId, true);
+
+             
             var user = await _userHelper.GetUserByEmailAsync(userName);
             if (user == null)
             {
-                return;
-
+                throw new ArgumentException("User not found");
             }
-            var employeeIndex = await _context.Employees
-                .Where(v => v.User == user)
-                .FirstOrDefaultAsync();
 
-            employeeIndex = new EmployeeViewModel
+ 
+            var employee = new Employee
             {
-                ImageFileId = imageId,
-                Id = model.Id,
                 Name = model.Name,
                 Address = model.Address,
                 Phone = model.Phone,
                 Email = model.Email,
-                Role = model.RoleId,
-                RoleId = model.RoleId,
+                RoleId = model.RoleId,  
+                ImageFileId = imageId,
                 User = user,
-
             };
-            _context.Employees.Add(employeeIndex);
+ 
+            _context.Employees.Add(employee);
 
+ 
             await _context.SaveChangesAsync();
         }
 
-        public IQueryable GetAllWithUsers()
+        public IQueryable<Employee> GetAllWithUsers()
         {
-            return _context.Employees.Include(v => v.User);
+            return _context.Employees
+                .Include(e => e.User)
+                .Include(e => e.Role);
+
         }
 
         public IEnumerable<SelectListItem> GetComboEmployess()
@@ -90,19 +128,12 @@ namespace LigaNOS.Data.Repositories
 
         public IEnumerable<SelectListItem> GetComboRoles()
         {
-            var model = new EmployeeViewModel
+        
+            return _context.Roles.Select(r => new SelectListItem
             {
-                Roles = new List<SelectListItem>
-                {
-                    new SelectListItem{Text = "Select the Role...",Value = "" },
-         
-                    new SelectListItem{Text = "Admin", Value = "Admin"},
-                    new SelectListItem{Text = "Employe", Value = "Emplo"},
-                    new SelectListItem{Text = "Club", Value = "Clubs"},
-
-                },
-            };
-            return model.Roles;
+                Text = r.Name,
+                Value = r.Id
+            }).ToList();
         }
     }
 }

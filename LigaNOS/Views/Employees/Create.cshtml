@@ -35,11 +35,16 @@
                 <input asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
-            <div class="form-group">
+          @*   <div class="form-group">
                 <label asp-for="RoleId" class="control-label"></label>
                 <ejs-combobox id="role" ejs-for="RoleId" dataSource="@ViewBag.Roles" placeholder="Select the role">
                     <e-combobox-fields value="Value" text="Text"></e-combobox-fields>
                 </ejs-combobox>
+                <span asp-validation-for="RoleId" class="text-danger"></span>
+            </div> *@
+            <div class="form-group">
+                <label asp-for="RoleId" class="control-label"></label>
+                <select asp-for="RoleId" class="form-control" asp-items="Model.Roles"></select>
                 <span asp-validation-for="RoleId" class="text-danger"></span>
             </div>
             <div class="form-group">

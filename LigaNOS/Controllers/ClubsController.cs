@@ -37,7 +37,7 @@ namespace LigaNOS.Controllers
         }
 
         // GET: ClubsController/Details/5
-        [Authorize(Roles = "Admin, Club")]
+        [Authorize(Roles = "Club")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
