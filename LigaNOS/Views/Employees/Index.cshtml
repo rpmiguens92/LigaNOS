@@ -5,8 +5,8 @@
  
 
 
-<h1>Employees</h1>
-
+<h3>Employees</h3>
+<br />
 <a asp-action="Create" style="margin-bottom: 16px;" class="btn btn-primary"><i class="fa fa-save"></i>Create New</a>
 
 <form method="get" asp-action="Index">
@@ -83,7 +83,7 @@
             fetch(`/Employees/Search?searchString=${encodeURIComponent(searchString)}`)
                 .then(response => response.text())
                 .then(html => {
-                    // Substitui apenas a tabela com os novos dados
+                   
                     document.querySelector('table tbody').innerHTML = html;
                 })
                 .catch(error => console.error('Error:', error));

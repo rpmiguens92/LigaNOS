@@ -35,6 +35,21 @@ namespace LigaNOS.Controllers
         {
             return View(_clubRepository.GetAll().OrderBy(c => c.Name));
         }
+        public IActionResult Search(string searchString)
+        {
+            var clubs = _clubRepository.GetAll().ToList();  
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                clubs = clubs.Where(c =>
+                    c.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase) ||
+                    c.Coach.Contains(searchString, StringComparison.OrdinalIgnoreCase) ||
+                    c.Stadium.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+
+            return PartialView("_ClubTableBody", clubs.ToList());
+        }
 
         // GET: ClubsController/Details/5
         [Authorize(Roles = "Club")]
