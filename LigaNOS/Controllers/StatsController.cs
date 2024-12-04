@@ -143,8 +143,74 @@ namespace LigaNOS.Controllers
         }
 
 
-        // GET: StatsController/Details/5
-        public ActionResult Details(int id)
+        public IActionResult Search(string searchString)
+        {
+            var clubs = _clubRepository.GetAllWithUsers().OfType<Club>().ToList();
+
+            var clubStats = clubs.Select(club =>
+            {
+                var matchesForClub = _context.Matches
+                    .Where(m => m.HomeClub.Id == club.Id || m.AwayClub.Id == club.Id)
+                    .ToList();
+
+                int wins = 0, losses = 0, draws = 0, points = 0, goalsScored = 0, goalsConceded = 0;
+
+                foreach (var match in matchesForClub)
+                {
+                    bool isHomeTeam = match.HomeClub.Id == club.Id;
+
+                    if (isHomeTeam)
+                    {
+                        goalsScored += match.HomeGoals;
+                        goalsConceded += match.AwayGoals;
+                        if (match.HomeGoals > match.AwayGoals) { points += 3; wins++; }
+                        else if (match.HomeGoals == match.AwayGoals) { points++; draws++; }
+                        else { losses++; }
+                    }
+                    else
+                    {
+                        goalsScored += match.AwayGoals;
+                        goalsConceded += match.HomeGoals;
+                        if (match.AwayGoals > match.HomeGoals) { points += 3; wins++; }
+                        else if (match.AwayGoals == match.HomeGoals) { points++; draws++; }
+                        else { losses++; }
+                    }
+                }
+
+                return new ClubStatViewModel
+                {
+                    ClubName = club.Name,
+                    Points = points,
+                    GoalsScored = goalsScored,
+                    GoalsConceded = goalsConceded,
+                    Wins = wins,
+                    Losses = losses,
+                    Draws = draws,
+                    ClubSymbol = club.ImageFileId
+                };
+            }).ToList();
+
+           
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                clubStats = clubStats
+                    .Where(c => c.ClubName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+
+            var model = new StatViewModel
+            {
+                ClubStats = clubStats
+            };
+
+            // Debugging output to check results
+            Console.WriteLine($"Filtered results count: {model.ClubStats.Count}");
+
+            return PartialView("_ScoreTableBody", model);
+        }
+
+            // GET: StatsController/Details/5
+            public ActionResult Details(int id)
         {
             return View();
         }

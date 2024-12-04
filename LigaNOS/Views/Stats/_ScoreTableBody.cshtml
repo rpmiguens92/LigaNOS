@@ -1,0 +1,19 @@
+﻿@model LigaNOS.Models.StatViewModel
+
+<tbody>
+    @foreach (var club in Model.ClubStats)
+    {
+        <tr>
+            <td>
+                <img src="@club.ClubSymbol" alt="@club.ClubName" style="width: 20px; height: 20px; margin-right: 10px;" />
+                @club.ClubName
+            </td>
+            <td>@club.Points</td>
+            <td>@club.GoalsScored</td>
+            <td>@club.GoalsConceded</td>
+            <td>@club.Wins</td>
+            <td>@club.Losses</td>
+            <td>@club.Draws</td>
+        </tr>
+    }
+</tbody>
