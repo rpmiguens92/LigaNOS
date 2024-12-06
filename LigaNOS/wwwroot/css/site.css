@@ -54,25 +54,19 @@ button.accept-policy {
 
 /* Sticky footer styles
 -------------------------------------------------- */
-html {
+/*html {
     position: relative;
     min-height: 100%;
     overflow: auto;
 }
 
-body {
+body {*/
     /* Margin bottom by footer height */
-    margin-bottom: 50px;
+    /*margin-bottom: 50px;
     overflow: auto
-}
+}*/
 
-.footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    white-space: nowrap;
-    line-height: 60px; /* Vertically center the text there */
-}
+
 
 /* background
     -------------------------------------------------- */
@@ -165,7 +159,7 @@ body {
 }
 
 /*site*/
-body {
+.body {
     overflow: auto !important;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #FAF09B;
@@ -217,3 +211,21 @@ html {
     bottom: 0;
     margin: auto;
 }
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%; /* Ocupa toda a largura */
+    line-height: 60px; /* Altura consistente */
+    background-color: #FFFFFF; /* Fundo branco */
+    text-align: center; /* Centraliza o conteúdo */
+    margin-top: 20px; /* Adiciona espaço entre o conteúdo e o rodapé */
+    padding: 0 20px;
+    border-top: 1px solid #ddd; /* Linha separadora */
+}
+.pdf-button-container {
+    text-align: center; /* Centraliza o botão */
+    margin-top: 20px; /* Espaço acima */
+    margin-bottom: 40px; /* Espaço abaixo */
+}
+ 

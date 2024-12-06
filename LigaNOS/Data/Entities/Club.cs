@@ -34,7 +34,9 @@ namespace LigaNOS.Data.Entities
         public ICollection<Stat> AwayStats { get; set; }
 
         public ICollection<Player> Players { get; set; }
+        public ICollection<Employee> Employees { get; set; }
         public User User { get; set; }
+      
 
         public string ImageFullPath => ImageFileId == Guid.Empty
              ? $"https://liganos.azurewebsites.net/images/noimage.jpg"

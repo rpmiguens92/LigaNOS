@@ -32,7 +32,13 @@
             @Html.DisplayNameFor(model => model.Role)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Role)
+            @Html.DisplayFor(model => model.Role.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Club.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Club.Name)
         </dd>
     </dl>
 </div>
@@ -42,8 +48,7 @@
     
 <br />
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id" style="margin-right: 2px; margin-left: 12%" class="button button-contactForm boxed-btn"><i class="far fa-edit"></i>Edit</a>
-    <a asp-action="Index" class="button button-contactForm boxed-btn"><i class="fa fa-chevron-left"></i>Back to List</a>
+    <a asp-action="Index" class="btn btn-success">Back to List</a>
 </div>
 
 

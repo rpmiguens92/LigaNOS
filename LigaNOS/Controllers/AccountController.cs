@@ -161,7 +161,7 @@ namespace LigaNOS.Controllers
                         Request.Scheme);
 
                     // Email
-                    //_mailHelper.SendEmail(user.Email, "E-mail confirmation", $"Click on link below to confirm your e-mail. {confirmationLink}");
+                    _mailHelper.SendEmail(user.Email, "E-mail confirmation", $"Click on link below to confirm your e-mail. {confirmationLink}");
 
                     
                     ViewBag.Message = "Please, confirm your email.";

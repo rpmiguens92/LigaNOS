@@ -9,6 +9,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using LigaNOS.Data.Entities;
 
 namespace LigaNOS.Controllers
 {
@@ -23,16 +25,17 @@ public class EmployeesController : Controller
         private readonly IUserRepository _userRepository;
         RoleManager<IdentityRole> _roleManager;
 
-        public EmployeesController(IUserRepository userRepository, 
+        public EmployeesController(
+            DataContext context,
+            IUserRepository userRepository, 
             IEmployeeRepository employeeRepository, 
             IConverterHelper converterHelper,
             IBlobHelper blobHelper,
             IUserHelper userHelper,
             RoleManager<IdentityRole> roleManager)
 
-
-
         {
+            _context = context;
             _userRepository = userRepository;
             _blobHelper = blobHelper;
             _userHelper = userHelper;
@@ -85,7 +88,10 @@ public class EmployeesController : Controller
                 return NotFound(); 
             }
 
-            var employee = await _employeeRepository.GetByIdAsync(id.Value);
+            //var employee = await _employeeRepository.GetByIdAsync(id.Value);
+            var employee = await _employeeRepository.GetAllWithUsers()
+                .FirstOrDefaultAsync(e => e.Id == id);
+
             if (employee == null)
             {
                 return NotFound(); // Substituindo por NotFound() padrão
@@ -103,6 +109,7 @@ public class EmployeesController : Controller
                 Roles = _employeeRepository.GetComboRoles(),
             };
             ViewBag.Roles = model.Roles;
+            ViewBag.Clubs = new SelectList(_context.Clubs.ToList(), "Id", "Name");
             return View(model);
         }
 
@@ -112,12 +119,42 @@ public class EmployeesController : Controller
         [Route("createemployee")]
         public async Task<IActionResult> Create(EmployeeViewModel model)
         {
-            if (ModelState.IsValid)
+            //if (ModelState.IsValid)
+            //{
+
+            //    ViewBag.Roles = _employeeRepository.GetComboRoles();
+            //    ViewBag.Clubs = new SelectList(_context.Clubs, "Id", "Name"); // Recarregar clubes
+            //    return View(model);
+
+            //}
+            //await _employeeRepository.AddRoleToEmployeeAsync(model, this.User.Identity.Name);
+            //await _employeeRepository.AddClubToEmployeeAsync(model.Id, model.ClubId);
+            //return RedirectToAction(nameof(Index));
+
+            if (!ModelState.IsValid)
             {
-                await _employeeRepository.AddRoleToEmployeeAsync(model, this.User.Identity.Name);
-                return RedirectToAction(nameof(Index));
+                ViewBag.Roles = _employeeRepository.GetComboRoles();
+                ViewBag.Clubs = new SelectList(_context.Clubs, "Id", "Name");
+                return View(model);
             }
-            return View(model);
+
+            // Cria o funcionário e salva no banco
+            var employee = new Employee
+            {
+                Name = model.Name,
+                Address = model.Address,
+                Phone = model.Phone,
+                Email = model.Email,
+                RoleId = model.RoleId,
+                ClubId = model.ClubId,
+                ImageFileId = model.ImageFile != null
+                              ? await _blobHelper.UploadBlobAsync(model.ImageFile, "employees")
+                              : Guid.Empty,
+            };
+
+            await _employeeRepository.UpdateAsync(employee);  
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Employees/Edit/5
@@ -150,6 +187,7 @@ public class EmployeesController : Controller
             };
 
             ViewBag.Roles = model.Roles;
+            ViewBag.Clubs = new SelectList(await _context.Clubs.ToListAsync(), "Id", "Name", employee.Club);
             return View(model);
         }
 
@@ -166,16 +204,16 @@ public class EmployeesController : Controller
                 return NotFound();
             }
 
-            // Verifica se o utilizador está autenticado
+             
             if (!User.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Login", "Account");
             }
 
-            // Valida o estado do modelo
+            
             if (!ModelState.IsValid)
             {
-                // Recarrega a lista de roles em caso de falha de validação
+               
                 model.Roles = _employeeRepository.GetComboRoles();
                 return View(model);
             }
@@ -212,7 +250,7 @@ public class EmployeesController : Controller
                
                 await _employeeRepository.UpdateAsync(employee);
 
-               
+                ViewBag.Clubs = new SelectList(await _context.Clubs.ToListAsync(), "Id", "Name", employee.Club);
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateConcurrencyException)
@@ -226,6 +264,7 @@ public class EmployeesController : Controller
                     throw;
                 }
             }
+
         }
 
         // GET: Employees/Delete/5

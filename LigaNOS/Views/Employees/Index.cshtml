@@ -37,6 +37,9 @@
                         <th>
                             @Html.DisplayNameFor(model => model.Role)
                         </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Club)
+            </th>
                         <th></th>
                     </tr>
                 </thead>
@@ -65,6 +68,9 @@
                             <td>
                                 @Html.DisplayFor(modelItem => item.Role.Name)
                             </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Club.Name)
+                </td>
                             <td>
                                 <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning"><i class="far fa-edit"></i></a>
                                 <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info"><i class="fas fa-list"></i></a>

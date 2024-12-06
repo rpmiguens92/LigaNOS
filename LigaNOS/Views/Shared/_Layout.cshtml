@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="~/css/site.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 </head>
+<main>
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
@@ -40,7 +41,7 @@
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin </a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                <li><a class="dropdown-item" asp-area="" asp-controller="Employees" asp-action="Index">Employees</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="RegisterRole">New Role </a></li>  
+                                    @* <li><a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="RegisterRole">New Role </a></li>   *@
                                   
 
                                 </ul>
@@ -92,16 +93,20 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2024 - LigaNOS -  <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
+        <footer class="footer text-muted">
+            <div class="container text-right">
+                <span><strong>&copy; 2024 LigaNOS</strong> - All rights reserved</span>
+                <span style="margin-left: 15px;">
+                   
+                </span>
+            </div>
+        </footer>
+  
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
  
     @await RenderSectionAsync("Scripts", required: false)
 </body>
-
  

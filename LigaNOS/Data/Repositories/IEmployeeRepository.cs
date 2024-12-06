@@ -16,5 +16,6 @@ namespace LigaNOS.Data.Repositories
         IEnumerable<SelectListItem> GetComboRoles();
 
         public Task AddRoleToEmployeeAsync(EmployeeViewModel model, string userName);
+        Task AddClubToEmployeeAsync(int id, int clubId);
     }
 }

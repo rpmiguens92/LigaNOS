@@ -28,41 +28,31 @@ namespace LigaNOS.Data.Repositories
             _blobHelper = blobHelper;
         }
 
-        public async Task AddRoleToEmployeeAsync(EmployeeViewModel model, string userName)
+        public async Task AddClubToEmployeeAsync(int id, int clubId)
         {
-            //Guid imageId = Guid.Empty;
+            var employee = await _context.Employees.FindAsync(id);
+            if (employee == null)
+            {
+                throw new Exception("Employee not found.");
+            }
 
-            //if (model.ImageFile != null && model.ImageFile.Length > 0)
-            //{
-            //    imageId = await _blobHelper.UploadBlobAsync(model.ImageFile, "employees");
+            
+            var club = await _context.Clubs.FindAsync(clubId);
+            if (club == null)
+            {
+                throw new Exception("Club not found.");
+            }
 
-            //}
-            //var vet = _converterHelper.ToEmployee(model, imageId, true);
-            //var user = await _userHelper.GetUserByEmailAsync(userName);
-            //if (user == null)
-            //{
-            //    return;
+            
+            employee.ClubId = clubId;
 
-            //}
-            //var employeeIndex = await _context.Employees
-            //    .Where(v => v.User == user)
-            //    .FirstOrDefaultAsync();
+            // update
+            _context.Employees.Update(employee);
+            await _context.SaveChangesAsync();
+        }
 
-            //employeeIndex = new EmployeeViewModel
-            //{
-            //    ImageFileId = imageId,
-            //    Id = model.Id,
-            //    Name = model.Name,
-            //    Address = model.Address,
-            //    Phone = model.Phone,
-            //    Email = model.Email,
-            //    RoleId = model.RoleId,
-            //    User = user,
-
-            //};
-            //_context.Employees.Add(employeeIndex);
-
-            //await _context.SaveChangesAsync();
+        public async Task AddRoleToEmployeeAsync(EmployeeViewModel model, string userName)
+        { 
            
             if (string.IsNullOrEmpty(model.Email))
             {
@@ -105,7 +95,8 @@ namespace LigaNOS.Data.Repositories
         {
             return _context.Employees
                 .Include(e => e.User)
-                .Include(e => e.Role);
+                .Include(e => e.Role)
+                .Include(e => e.Club);
 
         }
 

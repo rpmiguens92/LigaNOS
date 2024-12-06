@@ -26,6 +26,7 @@ namespace LigaNOS.Models
         public string RoleId { get; set; }  
 
         public IEnumerable<SelectListItem> Roles { get; set; }  
+        public IEnumerable<SelectListItem> Clubs { get; set; }
     }
 
 }

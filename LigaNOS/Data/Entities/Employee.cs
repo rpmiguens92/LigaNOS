@@ -32,6 +32,10 @@ namespace LigaNOS.Data.Entities
 
         public User User { get; set; }
 
+        [Required]
+        public int ClubId { get; set; }
+        public Club Club { get; set; }
+
  
 
         public string ImageFullPath => ImageFileId == Guid.Empty

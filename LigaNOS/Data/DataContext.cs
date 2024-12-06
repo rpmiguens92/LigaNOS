@@ -28,9 +28,8 @@ namespace LigaNOS.Data
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Employee>()
-                .HasOne(e => e.Role)
-                .WithMany()  
-                .HasForeignKey(e => e.RoleId)
+                .HasOne(e => e.Club)
+                .WithMany(c => c.Employees)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Match>()
