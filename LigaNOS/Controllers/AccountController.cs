@@ -138,16 +138,16 @@ namespace LigaNOS.Controllers
         public async Task<IActionResult> Register(RegisterUserViewModel model)
         {
             if (ModelState.IsValid)
-            { 
-                   var  user = new User
-                    {
-                        FirstName = model.FirstName,
-                        LastName = model.LastName,
-                        Email = model.Username,
-                        UserName = model.Username,
-                    };
+            {
+                var user = new User
+                {
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Email = model.Username,
+                    UserName = model.Username,
+                };
 
-                    var result = await _userHelper.AddUserAsync(user, model.Password);
+                var result = await _userHelper.AddUserAsync(user, model.Password);
                 if (result.Succeeded)
                 {
                     //token
@@ -161,9 +161,13 @@ namespace LigaNOS.Controllers
                         Request.Scheme);
 
                     // Email
-                    _mailHelper.SendEmail(user.Email, "E-mail confirmation", $"Click on link below to confirm your e-mail. {confirmationLink}");
+                    var response = _mailHelper.SendEmail(user.Email, "E-mail confirmation", $"Click on the link below to confirm your e-mail: {confirmationLink}");
 
-                    
+                    if (!response.IsSuccess)
+                    {
+                        ModelState.AddModelError(string.Empty, $"Erro ao enviar email: {response.Message}");
+                        return View(model);
+                    }
                     ViewBag.Message = "Please, confirm your email.";
                     return View("Register");
                 }
@@ -173,6 +177,51 @@ namespace LigaNOS.Controllers
                 }
             }
             return View(model);
+            //if (ModelState.IsValid)
+            //{
+            //    var user = new User
+            //    {
+            //        FirstName = model.FirstName,
+            //        LastName = model.LastName,
+            //        Email = model.Username,
+            //        UserName = model.Username,
+            //    };
+
+            //    var result = await _userHelper.AddUserAsync(user, model.Password);
+            //    if (result.Succeeded)
+            //    {
+            //        // Gera o token de redefinição de senha
+            //        var resetToken = await _userHelper.GeneratePasswordResetTokenAsync(user);
+
+            //        // Cria o link para redefinir a senha
+            //        var resetLink = Url.Action(
+            //            "ResetPassword",
+            //            "Account",
+            //            new { token = resetToken }, protocol: HttpContext.Request.Scheme);
+
+            //        // Envia o email para o usuário com o link de redefinição de senha
+            //        var response = _mailHelper.SendEmail(
+            //            user.Email,
+            //            "Bem-vindo à LigaNOS - Criação de Senha",
+            //            $"<h1>Bem-vindo à LigaNOS</h1><p>Para criar sua senha, clique no link abaixo:</p><a href=\"{resetLink}\">Criar Senha</a>");
+
+            //        if (!response.IsSuccess)
+            //        {
+            //            ModelState.AddModelError(string.Empty, $"Erro ao enviar email: {response.Message}");
+            //            return View(model);
+            //        }
+
+            //        ViewBag.Message = "O funcionário foi registrado. Um email foi enviado para que ele crie sua senha.";
+            //        return View("RegisterEmployee");
+            //    }
+
+            //    foreach (var error in result.Errors)
+            //    {
+            //        ModelState.AddModelError(string.Empty, error.Description);
+            //    }
+            //}
+
+            //return View(model);
         }
 
 

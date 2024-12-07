@@ -11,6 +11,7 @@ using System;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using LigaNOS.Data.Entities;
+using System.Collections.Generic;
 
 namespace LigaNOS.Controllers
 {
@@ -23,6 +24,7 @@ public class EmployeesController : Controller
         private readonly IConverterHelper _converterHelper;
         private readonly IBlobHelper _blobHelper;
         private readonly IUserRepository _userRepository;
+        private readonly IMailHelper _mailHelper;
         RoleManager<IdentityRole> _roleManager;
 
         public EmployeesController(
@@ -32,6 +34,7 @@ public class EmployeesController : Controller
             IConverterHelper converterHelper,
             IBlobHelper blobHelper,
             IUserHelper userHelper,
+            IMailHelper mailHelper,
             RoleManager<IdentityRole> roleManager)
 
         {
@@ -41,6 +44,7 @@ public class EmployeesController : Controller
             _userHelper = userHelper;
             _converterHelper = converterHelper;
             _employeeRepository = employeeRepository;
+            _mailHelper = mailHelper;
             _roleManager = roleManager;
         }
 
@@ -48,7 +52,13 @@ public class EmployeesController : Controller
         public IActionResult Index(string searchString)
         {
             ViewData["CurrentFilter"] = searchString;
-            var employees = _employeeRepository.GetAllWithUsers().ToList();
+            var employees = _employeeRepository.GetAllWithUsers()?.ToList();
+
+            if (employees == null)
+            {
+                 ModelState.AddModelError(string.Empty, "No employees found.");
+                return View(new List<Employee>()); // Retorna uma lista vazia
+            }
 
             if (!string.IsNullOrEmpty(searchString))
             {
@@ -94,7 +104,7 @@ public class EmployeesController : Controller
 
             if (employee == null)
             {
-                return NotFound(); // Substituindo por NotFound() padrão
+                return NotFound();
             }
 
             return View(employee);
@@ -130,7 +140,15 @@ public class EmployeesController : Controller
             //await _employeeRepository.AddRoleToEmployeeAsync(model, this.User.Identity.Name);
             //await _employeeRepository.AddClubToEmployeeAsync(model.Id, model.ClubId);
             //return RedirectToAction(nameof(Index));
+            if (!await _context.Clubs.AnyAsync(c => c.Id == model.ClubId))
+            {
+                ModelState.AddModelError("ClubId", "The selected club is not valid.");
+            }
 
+            if (!await _context.Roles.AnyAsync(r => r.Id == model.RoleId))
+            {
+                ModelState.AddModelError("RoleId", "The selected role is not valid.");
+            }
             if (!ModelState.IsValid)
             {
                 ViewBag.Roles = _employeeRepository.GetComboRoles();
@@ -138,7 +156,15 @@ public class EmployeesController : Controller
                 return View(model);
             }
 
-            // Cria o funcionário e salva no banco
+            var clubExists = await _context.Clubs.AnyAsync(c => c.Id == model.ClubId);
+            if (!clubExists)
+            {
+                ModelState.AddModelError("ClubId", "O clube selecionado não é válido.");
+                ViewBag.Roles = _employeeRepository.GetComboRoles();
+                ViewBag.Clubs = new SelectList(_context.Clubs, "Id", "Name");
+                return View(model);
+            }
+           
             var employee = new Employee
             {
                 Name = model.Name,
@@ -152,9 +178,53 @@ public class EmployeesController : Controller
                               : Guid.Empty,
             };
 
-            await _employeeRepository.UpdateAsync(employee);  
 
-            return RedirectToAction(nameof(Index));
+            await _employeeRepository.UpdateAsync(employee);
+
+            var user = new User
+            {
+                FirstName = model.Name,
+                LastName = model.Name,  
+                Email = model.Email,
+                UserName = model.Email,
+            };
+
+            var result = await _userHelper.AddUserAsync(user, "123456"); 
+            if (result.Succeeded)
+            {
+            
+                await _userHelper.AddUserToRoleAsync(user, "Employee");
+  
+                var resetToken = await _userHelper.GeneratePasswordResetTokenAsync(user);
+
+                 
+                var resetLink = Url.Action(
+                    "ResetPassword",
+                    "Account",
+                    new { token = resetToken }, protocol: HttpContext.Request.Scheme);
+
+                // Envia email  
+                var response = _mailHelper.SendEmail(
+                    user.Email,
+                    "Welcome to LigaNOS - Account Confirmation",
+                    $"<h1>Welcome! </h1><p>Create your password bu clicking on link below:</p><a href=\"{resetLink}\">Create Password</a>");
+
+                if (!response.IsSuccess)
+                {
+                    ModelState.AddModelError(string.Empty, $"Something went wrong {response.Message}");
+                    return View(model);
+                }
+
+                ViewBag.Message = "Employee creation succeeded. It was sent an e-mail for account confirmation.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return View(model);
         }
 
         // GET: Employees/Edit/5
@@ -171,23 +241,26 @@ public class EmployeesController : Controller
             {
                 return NotFound();
             }
+            var clubs = await _context.Clubs.ToListAsync();
 
             var model = new EmployeeViewModel
             {
-                //Roles = _employeeRepository.GetComboRoles(),
+              
                 Id = employee.Id,
                 Name = employee.Name,
                 Address = employee.Address,
                 Phone = employee.Phone,
                 Email = employee.Email,
                 RoleId = employee.RoleId,
+                ClubId = employee.ClubId,
                 ImageFileId = employee.ImageFileId,
          
-                Roles = _employeeRepository.GetComboRoles()
+                Roles = _employeeRepository.GetComboRoles(),
+                Clubs = new SelectList(clubs, "Id", "Name", employee.ClubId)
             };
 
-            ViewBag.Roles = model.Roles;
-            ViewBag.Clubs = new SelectList(await _context.Clubs.ToListAsync(), "Id", "Name", employee.Club);
+            //ViewBag.Roles = model.Roles;
+           // ViewBag.Clubs = new SelectList(await _context.Clubs.ToListAsync(), "Id", "Name", employee.Club);
             return View(model);
         }
 
@@ -243,6 +316,7 @@ public class EmployeesController : Controller
                 employee.Phone = model.Phone;
                 employee.Email = model.Email;
                 employee.RoleId = model.RoleId;
+                employee.ClubId = model.ClubId;
 
                 
                 employee.User = await _userHelper.GetUserByEmailAsync(User.Identity.Name);

@@ -65,12 +65,28 @@
                             <td>
                                 @Html.DisplayFor(modelItem => item.Email)
                             </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Role.Name)
-                            </td>
+                            
                 <td>
-                    @Html.DisplayFor(modelItem => item.Club.Name)
+                        @if (item.Role != null)
+                        {
+                            @item.Role.Name
+                        }
+                        else
+                        {
+                        <span>No Role</span>
+                        }
                 </td>
+                          
+                                <td>
+                    @if (item.Club != null)
+                    {
+                        @item.Club.Name
+                    }
+                    else
+                    {
+                        <span>No Club</span>
+                    }
+                             </td>
                             <td>
                                 <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning"><i class="far fa-edit"></i></a>
                                 <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info"><i class="fas fa-list"></i></a>

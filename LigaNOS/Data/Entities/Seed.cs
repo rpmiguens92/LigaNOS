@@ -33,13 +33,13 @@ namespace LigaNOS.Data.Entities
 
             
             await EnsureRoleExistsAsync("Admin");
-            await EnsureRoleExistsAsync("Emplo");
-            await EnsureRoleExistsAsync("Club");
+            await EnsureRoleExistsAsync("Employee");
+            await EnsureRoleExistsAsync("ClubAdmin");
 
            
             var userAdmin = await CreateUserAndAssignRoleAsync("miguens.rp@gmail.com", "Rita", "Miguens", "Admin", "123456");
-            var userEmplo = await CreateUserAndAssignRoleAsync("miguel@yopmail.com", "Miguel", "Miguens", "Emplo", "123456");
-            var userClub = await CreateUserAndAssignRoleAsync("maria@yopmail.com", "Maria", "Miguens", "Club", "123456");
+            var userEmployee = await CreateUserAndAssignRoleAsync("miguel@yopmail.com", "Miguel", "Miguens", "Employee", "123456");
+            var userClubAdmin = await CreateUserAndAssignRoleAsync("maria@yopmail.com", "Maria", "Miguens", "ClubAdmin", "123456");
 
             
             if (!_context.Clubs.Any())
@@ -78,19 +78,19 @@ namespace LigaNOS.Data.Entities
 
             if(!_context.Employees.Any())
             {
-                AddEmployee("Miguel Miguens", userEmplo);
-                AddEmployee("Maria Miguens", userEmplo);
-                AddEmployee("Francisco Miguens", userEmplo);
+                AddEmployee("Miguel Miguens", userEmployee);
+                AddEmployee("Maria Miguens", userEmployee);
+                AddEmployee("Francisco Miguens", userEmployee);
                 await _context.SaveChangesAsync();
             }
         }
 
         private void AddEmployee(string name, User userEmplo)
         {
-            var roleId = _context.Roles.FirstOrDefault(r => r.Name == "Emplo")?.Id;
+            var roleId = _context.Roles.FirstOrDefault(r => r.Name == "Employee")?.Id;
             if (string.IsNullOrEmpty(roleId))
             {
-                throw new InvalidOperationException("Role 'Emplo' not found.");
+                throw new InvalidOperationException("Role 'Employee' not found.");
             }
             _context.Employees.Add(new Employee
             {
@@ -147,11 +147,7 @@ namespace LigaNOS.Data.Entities
                 {
                     throw new InvalidOperationException($"Failed to create role: {roleName}");
                 }
-                //var result = await _roleManager.CreateAsync(new IdentityRole(roleName));
-                //if (!result.Succeeded)
-                //{
-                //    throw new InvalidOperationException($"Failed to create role: {roleName}");
-                //}
+               
             }
         }
 

@@ -44,7 +44,7 @@ namespace LigaNOS.Data.Repositories
             }
 
             
-            employee.ClubId = clubId;
+            employee.Club.Id = clubId;
 
             // update
             _context.Employees.Update(employee);

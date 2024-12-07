@@ -1,42 +1,27 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
 
 namespace LigaNOS.Migrations
 {
-    public partial class CreateEmployeesTable : Migration
+    public partial class UpdateEmployees : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-           name: "Employees",
-           columns: table => new
-           {
-               Id = table.Column<int>(nullable: false)
-                   .Annotation("SqlServer:Identity", "1, 1"),
-               ImageFileId = table.Column<Guid>(nullable: false),
-               Name = table.Column<string>(maxLength: 50, nullable: false),
-               Address = table.Column<string>(nullable: true),
-               Phone = table.Column<string>(nullable: true),
-               Email = table.Column<string>(nullable: false),
-               RoleId = table.Column<string>(nullable: false),
-               ClubId = table.Column<int>(nullable: true)
-           },
-           constraints: table =>
-           {
-               table.PrimaryKey("PK_Employees", x => x.Id);
-               table.ForeignKey(
-                   name: "FK_Employees_AspNetRoles_RoleId",
-                   column: x => x.RoleId,
-                   principalTable: "AspNetRoles",
-                   principalColumn: "Id",
-                   onDelete: ReferentialAction.Cascade);
-               table.ForeignKey(
-                   name: "FK_Employees_Clubs_ClubId",
-                   column: x => x.ClubId,
-                   principalTable: "Clubs",
-                   principalColumn: "Id",
-                   onDelete: ReferentialAction.Restrict);
-           });
+            migrationBuilder.DropColumn(
+                name: "Role",
+                table: "Employees");
+
+            migrationBuilder.AddColumn<int>(
+                name: "ClubId",
+                table: "Employees",
+                type: "int",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "RoleId",
+                table: "Employees",
+                type: "nvarchar(450)",
+                nullable: false,
+                defaultValue: "");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Employees_ClubId",
