@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using LigaNOS.Data.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace LigaNOS.Models
 {
-    public class ContactViewModel
+    public class ContactViewModel : Contact
     {
 
         [Required(ErrorMessage = "Name is required.")]

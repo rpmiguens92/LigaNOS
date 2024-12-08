@@ -1,17 +1,14 @@
 ﻿@model LigaNOS.Models.ContactViewModel
 @{
-    ViewData["Title"] = "Index";
-}
-
- 
-
-@{
-    ViewData["Title"] = "Contact us!";
+    ViewData["Title"] = "Contact Us!";
 }
 
 <h2>Contact Us</h2>
 
-<form asp-action="Contact" method="post">
+
+
+ 
+<form asp-action="SendMail" asp-controller="Contacts" method="post">
     <div class="form-group">
         <label asp-for="Name"></label>
         <input asp-for="Name" class="form-control" placeholder="Enter your name" />
@@ -41,4 +38,14 @@
 
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        // Ocultar flash messages após 5 segundos
+        setTimeout(() => {
+            const flashMessages = document.querySelectorAll(".alert");
+            flashMessages.forEach(message => {
+                message.style.display = "none";
+            });
+        }, 5000);  
+    </script>
 }

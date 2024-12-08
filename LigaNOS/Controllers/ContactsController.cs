@@ -36,7 +36,16 @@ namespace LigaNOS.Controllers
         {
             if (ModelState.IsValid)
             {
-                Response response = _mailHelper.SendEmail("ritapereiramiguens@gmail.com", model.Subject, model.Message);
+                var body = $@"
+            <h1>New Contact Message</h1>
+            <p><strong>Name:</strong> {model.Name}</p>
+            <p><strong>Email:</strong> {model.Email}</p>
+            <p><strong>Subject:</strong> {model.Subject}</p>
+            <p><strong>Message:</strong></p>
+            <p>{model.Message}</p>";
+
+
+                Response response = _mailHelper.SendEmail("ritapereiramiguens@gmail.com", model.Subject, body);
 
             
                 var contact = new Contact
@@ -59,6 +68,7 @@ namespace LigaNOS.Controllers
                 {
                     _flashMessage.Danger("Error! Message not sent.");
                 }
+                _flashMessage.Confirmation("Message sent! We apreciate your contact.");
             }
             return View("Index", model);
         }

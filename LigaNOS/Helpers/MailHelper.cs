@@ -5,6 +5,7 @@ using MimeKit;
 using MailKit.Net.Smtp;
 using LigaNOS.Models;
 using SmtpClient = MailKit.Net.Smtp.SmtpClient;
+using Microsoft.VisualStudio.Web.CodeGeneration.Contracts.Messaging;
 
 namespace LigaNOS.Helpers
 {
@@ -42,7 +43,7 @@ namespace LigaNOS.Helpers
             {
                 using (var client = new SmtpClient())
                 {
-                    client.Connect(smtp, int.Parse(port), false);
+                    client.Connect(smtp, int.Parse(port), MailKit.Security.SecureSocketOptions.StartTls);
                     client.Authenticate(from, password);
                     client.Send(message);
                     client.Disconnect(true);
@@ -53,7 +54,7 @@ namespace LigaNOS.Helpers
                 return new Response
                 {
                     IsSuccess = false,
-                    Message = ex.ToString()
+                    Message = $"Error sending email: {ex.Message}"
                 };
             }
 
