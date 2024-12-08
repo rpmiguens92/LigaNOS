@@ -99,16 +99,18 @@
 
  @section Scripts{
     <script>
-        function searchEmployees() {
-            const searchString = document.querySelector('input[name="searchString"]').value;
+     function searchEmployees() {
+    const searchString = document.querySelector('input[name="searchString"]').value;
 
-            fetch(`/Employees/Search?searchString=${encodeURIComponent(searchString)}`)
-                .then(response => response.text())
-                .then(html => {
-                   
-                    document.querySelector('table tbody').innerHTML = html;
-                })
-                .catch(error => console.error('Error:', error));
-        }
+    fetch(`/Employees/Search?searchString=${encodeURIComponent(searchString)}`)
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.text();
+        })
+        .then(html => {
+            const tableBody = document.querySelector('table tbody');
+            tableBody.innerHTML = html || '<tr><td colspan="8">No employees found.</td></tr>';
+        })
+        .catch(error => console.error('Error:', error));  }
     </script>
  }

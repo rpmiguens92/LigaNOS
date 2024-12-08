@@ -1,4 +1,5 @@
-﻿using LigaNOS.Data.Entities;
+﻿using LigaNOS.Data;
+using LigaNOS.Data.Entities;
 using LigaNOS.Data.Repositories;
 using LigaNOS.Helpers;
 using LigaNOS.Models;
@@ -20,10 +21,13 @@ namespace LigaNOS.Controllers
         private readonly IClubRepository _clubRepository;
         private readonly ITeamService _teamService;
         private readonly IMatchGenerator _matchGenerator;
+        private readonly IStatRepository _statRepository;
+        DataContext _dataContext;
 
         public MatchesController(IMatchRepository matchRepository,
             IUserHelper userHelper, IBlobHelper blobHelper, IConverterHelper converterHelper,
-            IClubRepository clubRepository, IMatchGenerator matchGenerator)
+            IClubRepository clubRepository, IMatchGenerator matchGenerator, IStatRepository statRepository,
+            DataContext dataContext)
         {
             _matchRepository = matchRepository;
             _matchGenerator = matchGenerator;
@@ -31,6 +35,8 @@ namespace LigaNOS.Controllers
             _blobHelper = blobHelper;
             _converterHelper = converterHelper;
             _clubRepository = clubRepository;
+            _statRepository = statRepository;
+            _dataContext = dataContext;
         }
 
         // GET: MatchesController
@@ -160,7 +166,7 @@ namespace LigaNOS.Controllers
                 MatchDay = match.MatchDay,
                 MatchTime = match.MatchTime
             };
-
+           
             return View(model);
         }
 
@@ -200,6 +206,17 @@ namespace LigaNOS.Controllers
                     match.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
 
                     await _matchRepository.UpdateAsync(match);
+
+                    var statsController = new StatsController(
+               _statRepository,
+               _matchRepository,
+               _clubRepository,
+               _userHelper,
+               _converterHelper,
+               _blobHelper,
+               _dataContext
+           );
+                    statsController.UpdateStats();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -214,6 +231,7 @@ namespace LigaNOS.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+             
             return View(model);
         }
 

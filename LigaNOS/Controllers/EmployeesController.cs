@@ -52,7 +52,7 @@ public class EmployeesController : Controller
         public IActionResult Index(string searchString)
         {
             ViewData["CurrentFilter"] = searchString;
-            var employees = _employeeRepository.GetAllWithUsers()?.ToList();
+            var employees = _employeeRepository.GetAllWithUsers().ToList();
 
             if (employees == null)
             {
@@ -75,18 +75,19 @@ public class EmployeesController : Controller
 
         public IActionResult Search(string searchString)
         {
+
             var employees = _employeeRepository.GetAllWithUsers().ToList();
 
             if (!string.IsNullOrEmpty(searchString))
             {
                 employees = employees.Where(e =>
-                        e.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase) ||
-                        e.Email.Contains(searchString, StringComparison.OrdinalIgnoreCase) ||
-                        e.Role.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-                    .ToList();
+                    (!string.IsNullOrEmpty(e.Name) && e.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase)) ||
+                    (!string.IsNullOrEmpty(e.Email) && e.Email.Contains(searchString, StringComparison.OrdinalIgnoreCase)) ||
+                    (e.Role != null && !string.IsNullOrEmpty(e.Role.Name) && e.Role.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase)))
+                .ToList();
             }
 
-            return PartialView("_EmployeeTableBody", employees.ToList());  
+            return PartialView("_EmployeeTableBody", employees);
         }
 
         // GET: Employees/Details/5

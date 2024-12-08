@@ -142,7 +142,54 @@ namespace LigaNOS.Controllers
 
         }
 
+        public IActionResult UpdateStats()
+        {
+            var matches = _context.Matches
+       .Include(m => m.HomeClub)
+       .Include(m => m.AwayClub)
+       .ToList();
 
+            var statsList = new List<Stat>();
+
+            foreach (var match in matches)
+            {
+                // Estatísticas para o clube da casa
+                statsList.Add(new Stat
+                {
+                    MatchId = match.Id,
+                    HomeClubId = match.HomeClub.Id,
+                    AwayClubId = match.AwayClub.Id,
+                    HomeClubGoals = match.HomeGoals,
+                    AwayClubGoals = match.AwayGoals,
+                    Wins = match.HomeGoals > match.AwayGoals ? 1 : 0,
+                    Draws = match.HomeGoals == match.AwayGoals ? 1 : 0,
+                    Losses = match.HomeGoals < match.AwayGoals ? 1 : 0,
+                    Points = match.HomeGoals > match.AwayGoals ? 3 : match.HomeGoals == match.AwayGoals ? 1 : 0
+                });
+
+                // Estatísticas para o clube visitante
+                statsList.Add(new Stat
+                {
+                    MatchId = match.Id,
+                    HomeClubId = match.AwayClub.Id,
+                    AwayClubId = match.HomeClub.Id,
+                    HomeClubGoals = match.AwayGoals,
+                    AwayClubGoals = match.HomeGoals,
+                    Wins = match.AwayGoals > match.HomeGoals ? 1 : 0,
+                    Draws = match.AwayGoals == match.HomeGoals ? 1 : 0,
+                    Losses = match.AwayGoals < match.HomeGoals ? 1 : 0,
+                    Points = match.AwayGoals > match.HomeGoals ? 3 : match.AwayGoals == match.HomeGoals ? 1 : 0
+                });
+            }
+
+             
+
+            // Adiciona as novas estatísticas
+            _context.Stats.AddRange(statsList);
+            _context.SaveChanges();
+
+            return RedirectToAction(nameof(Index));
+        }
         public IActionResult Search(string searchString)
         {
             var clubs = _clubRepository.GetAllWithUsers().OfType<Club>().ToList();
@@ -272,4 +319,5 @@ namespace LigaNOS.Controllers
             }
         }
     }
+
 }

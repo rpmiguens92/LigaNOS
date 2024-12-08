@@ -19,7 +19,7 @@ namespace LigaNOS.Controllers.API
         {
             _clubRepository = clubRepository;
         }
-        [HttpGet("Clubs")]
+        [HttpGet]
         public IActionResult GetClubs()
         {
             return Ok(_clubRepository.GetAllWithUsers());

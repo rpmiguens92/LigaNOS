@@ -9,14 +9,19 @@ namespace LigaNOS.Data.Entities
         public int Id { get; set; }
         public Match Match { get; set; }
         public int MatchId { get; set; }
+
         public Club HomeClub { get; set; }
         public int HomeClubId { get; set; }
+
         public Club AwayClub { get; set; }
         public int AwayClubId { get; set; }
+
         public int HomeClubGoals { get; set; }
         public int AwayClubGoals { get; set; }
+
         public int HomeClubGoalsConceded => AwayClubGoals;
         public int AwayClubGoalsConceded => HomeClubGoals;
+
         public int HomeClubPoints
         {
             get
@@ -35,6 +40,11 @@ namespace LigaNOS.Data.Entities
                 return 0;
             }
         }
+
+        public int Wins { get; set; }  
+        public int Draws { get; set; }  
+        public int Losses { get; set; }
+        public int Points { get; set; }
         public ICollection<Club> Clubs { get; set; }
         public ICollection<Match> Matches { get; set; }
         public User User { get; set; }

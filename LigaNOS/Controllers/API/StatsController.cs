@@ -1,5 +1,6 @@
 ﻿using LigaNOS.Data.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace LigaNOS.Controllers.API
 {
@@ -16,8 +17,8 @@ namespace LigaNOS.Controllers.API
         }
         [HttpGet]
         public IActionResult GetStats()
-        {  
-            return Ok(_statRepository.GetAll());
+        {
+            return Ok(_statRepository.GetAll().ToList());
         }
     }
 }
