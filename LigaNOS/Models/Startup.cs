@@ -89,6 +89,11 @@ namespace LigaNOS
                 options.AccessDeniedPath = "/Account/NotAuthorized";
 
             });
+            services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+    });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

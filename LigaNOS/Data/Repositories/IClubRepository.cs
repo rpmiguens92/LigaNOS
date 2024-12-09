@@ -1,4 +1,5 @@
 ﻿using LigaNOS.Data.Entities;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -8,5 +9,6 @@ namespace LigaNOS.Data.Repositories
     {
         public IQueryable GetAllWithUsers();
         Task<bool> HasMatchesAsync(int clubId);
+        Task<List<Club>> GetAllAsync();
     }
 }

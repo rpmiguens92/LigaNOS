@@ -42,5 +42,10 @@ namespace LigaNOS.Data.Repositories
         {
             return await _context.Clubs.FindAsync(id);
         }
+
+        public async Task<List<Club>> GetAllAsync()
+        {
+            return await _context.Clubs.ToListAsync();
+        }
     }
 }
