@@ -32,8 +32,7 @@ Gestão de Estatísticas:
 - Estatísticas detalhadas, como vitórias, derrotas, empates, golos marcados e sofridos.
 
 Gestão de Clubes:
-![image](https://github.com/user-attachments/assets/b527dcf2-dc4f-41b3-9002-8433479c1263)
-
+ ![image](https://github.com/user-attachments/assets/c5bdf21a-1604-4518-b446-4a6a15d53b89)
 
 
 Autenticação e Gestão de Utilizadores:
